@@ -37,3 +37,12 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 
 This syntax keeps the language minimal while remaining expressive across domains.
 
+
+## Specification
+
+See the `spec/` directory for language details:
+
+* `grammar.ebnf` – draft grammar for NFL.
+* `nfl.schema.json` – JSON Schema describing `pack`, `node`, `edge`, `trait`, and `impl`.
+
+Graphs should validate against `nfl.schema.json` to ensure structural correctness.
