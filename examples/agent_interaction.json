@@ -1,0 +1,10 @@
+{
+  "pack": "sdns.agent",
+  "nodes": [
+    {"name": "UserMessage", "type": "Text"},
+    {"name": "EchoAgent", "type": "fn", "impl": {"endpoint": "https://api.example.com/echo"}}
+  ],
+  "edges": [
+    {"from": "UserMessage", "to": "EchoAgent"}
+  ]
+}
