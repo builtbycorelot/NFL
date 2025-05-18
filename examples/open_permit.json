@@ -1,0 +1,10 @@
+{
+  "pack": "open.permit",
+  "nodes": [
+    {"name": "address", "type": "Address"},
+    {"name": "permit", "type": "BuildingPermit"}
+  ],
+  "edges": [
+    {"from": "address", "to": "permit"}
+  ]
+}

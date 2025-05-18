@@ -36,3 +36,17 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 * `impl` – provide the implementation
 
 This syntax keeps the language minimal while remaining expressive across domains.
+
+## Examples
+
+The `examples` directory provides small NFL graphs:
+
+* `simple.json` – minimal nodes and an edge
+* `open_permit.json` – basic Open Permit workflow
+* `open_tax.json` – property tax relationship
+
+Validate an example with the CLI:
+
+```bash
+python3 cli/nfl_cli.py examples/open_permit.json
+```
