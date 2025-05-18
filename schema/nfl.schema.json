@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NodeForm Language Graph",
+  "type": "object",
+  "properties": {
+    "pack": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" }
+        },
+        "required": ["name", "type"],
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" }
+        },
+        "required": ["from", "to"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["pack"],
+  "additionalProperties": true
+}
