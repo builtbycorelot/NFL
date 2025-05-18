@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NodeForm graph",
+  "type": "object",
+  "required": ["pack"],
+  "properties": {
+    "pack": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/edge" }
+    }
+  },
+  "definitions": {
+    "node": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" },
+        "trait": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "impl": { "type": "object" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "trait": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "impl": { "type": "object" }
+      }
+    }
+  }
+}

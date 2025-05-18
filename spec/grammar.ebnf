@@ -1,0 +1,23 @@
+(* NodeForm Language - Draft EBNF *)
+
+nfl            = { statement } ;
+
+statement      = pack | node | edge ;
+
+pack           = "pack" identifier ;
+node           = ("fn" | "node") identifier "(" [ parameters ] ")" "{" node_body "}" ;
+edge           = "edge" identifier "->" identifier [ edge_body ] ;
+
+parameters     = parameter { "," parameter } ;
+parameter      = identifier ":" identifier ;
+
+node_body      = { attribute } ;
+edge_body      = { attribute } ;
+
+attribute      = trait | impl ;
+trait          = "traits" "=" "[" identifier { "," identifier } "]" ;
+impl           = "impl" "=" json_object ;
+
+identifier     = ? letters, digits or '_' ? ;
+json_object    = ? JSON object ? ;
+
