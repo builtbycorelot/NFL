@@ -37,19 +37,3 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 
 This syntax keeps the language minimal while remaining expressive across domains.
 
-## Example: SDNS Agent Interaction
-
-A minimal NFL graph showing how an agent can receive a message.
-
-```json
-{
-  "pack": "sdns.agent",
-  "nodes": [
-    {"name": "UserMessage", "type": "Text"},
-    {"name": "EchoAgent", "type": "fn", "impl": {"endpoint": "https://api.example.com/echo"}}
-  ],
-  "edges": [
-    {"from": "UserMessage", "to": "EchoAgent"}
-  ]
-}
-```
