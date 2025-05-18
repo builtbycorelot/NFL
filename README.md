@@ -36,4 +36,3 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 * `impl` – provide the implementation
 
 This syntax keeps the language minimal while remaining expressive across domains.
-
