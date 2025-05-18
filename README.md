@@ -36,3 +36,15 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 * `impl` – provide the implementation
 
 This syntax keeps the language minimal while remaining expressive across domains.
+
+## CLI Usage
+
+The repository provides a small command line tool for validating NFL graphs and
+exporting them as an OpenAPI specification:
+
+```bash
+$ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
+```
+
+The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
+`/nodes` and `/edges` endpoints that describe the graph structure.
