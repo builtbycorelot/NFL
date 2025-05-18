@@ -36,15 +36,3 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 * `impl` – provide the implementation
 
 This syntax keeps the language minimal while remaining expressive across domains.
-
-
-## CLI Usage
-
-A small command-line utility is provided under `cli/` to validate NFL JSON files.
-Run the validator as follows:
-
-```bash
-./cli/nfl_cli.py examples/simple.json
-```
-
-Use `-h` or `--help` for command details.
