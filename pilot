@@ -1,0 +1,210 @@
+// ============================================================================
+//  OpenPermit / OpenTax – Commonwealth of Virginia Pilot (NodeForm Language)
+//  See www.github.com/SheetPros
+//  Author: Jeremiah Horstick (CORELOT / SheetPros)
+//  Date:    2025‑05‑18
+// ----------------------------------------------------------------------------
+//  This NFL schema captures the distilled semantic core (Party, Task, Transaction)
+//  and maps each node to Smartsheet, QuickBooks Online (Intuit), and HubSpot.
+//  Rows **and** cells are addressable nodes; all events resolve to Edge triggers.
+// ============================================================================
+
+namespace gov.va.openpermit
+
+// ---------------------------
+// 1.  Semantics (JSON‑LD core)
+// ---------------------------
+@context "https://schema.openpermit.dev/2025/core.jsonld"
+
+// ---- Party ---------------------------------------------------------------
+node Party {
+    @id            uuid()
+    @type          union { Person, Organization }
+    name           string
+    email?         string
+    phone?         string
+    roles          list<string>   // applicant, reviewer, vendor, etc.
+
+    @platform(smartsheet) {
+        sheet      "Contacts"
+        rowKey     @id
+        columns    {
+            Name   name,
+            Email  email,
+            Phone  phone,
+            Roles  roles
+        }
+    }
+    @platform(quickbooks) {
+        object     union { Customer, Vendor }
+        DisplayName name
+        PrimaryEmailAddr.Address email
+    }
+    @platform(hubspot) {
+        object     Contact
+        properties {
+            email        email,
+            firstname    split(name, 0),
+            lastname     split(name, 1),
+            phone        phone
+        }
+    }
+}
+
+// ---- Task ----------------------------------------------------------------
+node Task {
+    @id            uuid()
+    name           string
+    status         enum { Draft, InReview, Approved, Rejected }
+    dueDate?       date
+    assignee       Party
+
+    @platform(smartsheet) {
+        sheet "Schedule"
+        columns {
+            TaskName   name,
+            Status     status,
+            Due        dueDate,
+            AssignedTo assignee.email
+        }
+    }
+    @platform(hubspot) {
+        object Task
+        properties {
+            hs_task_subject name,
+            hs_task_status  status,
+            hs_task_due_date dueDate,
+            hs_task_assigned_to assignee.email
+        }
+    }
+}
+
+// ---- Transaction ---------------------------------------------------------
+node Transaction {
+    @id        uuid()
+    type       enum { Estimate, Invoice, Payment, PurchaseOrder, Bill, CreditMemo }
+    amount     money
+    currency   string = "USD"
+    date       date
+    lineItem[] record {
+        description string
+        qty         number
+        rate        money
+        glCode?     string
+    }
+    from        Party
+    to          Party
+    relatedApp? PermitApplication
+
+    @platform(smartsheet) {
+        sheet "Fees"
+        columns {
+            Amount     amount,
+            Currency   currency,
+            TxnType    type,
+            Date       date,
+            From       from.email,
+            To         to.email
+        }
+    }
+    @platform(quickbooks) {
+        object map {
+            Estimate       => Estimate,
+            Invoice        => Invoice,
+            Payment        => Payment,
+            PurchaseOrder  => PurchaseOrder,
+            Bill           => Bill,
+            CreditMemo     => CreditMemo
+        }[type]
+        Line   lineItem
+    }
+    @platform(hubspot) {
+        object line_items  // associated to deal
+        properties {
+            amount   amount,
+            quantity sum(lineItem.qty)
+        }
+    }
+}
+
+// ---- PermitApplication ----------------------------------------------------
+node PermitApplication {
+    @id           uuid()
+    applicant     Party
+    projectAddr   string
+    status        enum { Draft, Submitted, InReview, Issued }
+    fee[]         Transaction(type = Invoice)
+    tasks[]       Task
+
+    @platform(smartsheet) {
+        sheet   "Applications"
+        columns {
+            Applicant    applicant.email,
+            Address      projectAddr,
+            Status       status,
+            ApplicationID @id
+        }
+    }
+    @platform(hubspot) {
+        object Deal
+        properties {
+            dealname projectAddr,
+            dealstage status,
+            amount   sum(fee.amount)
+        }
+    }
+}
+
+// ---------------------------
+// 2.  Universal Edge Triggers
+// ---------------------------
+edge Submission : PermitApplication.status -> "Submitted" {
+    action Create(Task) {
+        name      = "Intake Validation"
+        status    = "InReview"
+        assignee  = lookupReviewer(applicant.county)
+    }
+}
+\ledge TaskComplete : Task.status -> "Approved" {
+    when all( PermitApplication.tasks.status == "Approved" ) {
+        action Update(PermitApplication) { status = "InReview" }
+        action Create(Transaction) {
+            type   = "Invoice"
+            amount = calcFees(PermitApplication)
+            from   = agency("County Treasury")
+            to     = PermitApplication.applicant
+        }
+    }
+}
+\ledge PaymentCleared : Transaction{type="Payment"}.status -> "Posted" {
+    action Update(PermitApplication) { status = "Issued" }
+    action Notify(PermitApplication.applicant.email, "Permit Issued")
+}
+
+// ---------------------------
+// 3.  Cross‑Platform Sync Functions
+// ---------------------------
+function SyncParty(p: Party) {
+    @smartsheet   upsertRow("Contacts", p)
+    @quickbooks   upsertCustomer(p)
+    @hubspot      upsertContact(p)
+}
+
+function SyncInvoice(inv: Transaction{type="Invoice"}) {
+    @smartsheet   upsertRow("Fees", inv)
+    @quickbooks   createInvoice(inv)
+    @hubspot      createLineItems(inv)
+}
+
+function SyncPayment(pay: Transaction{type="Payment"}) {
+    @quickbooks   recordPayment(pay)
+    @smartsheet   markPaid(pay)
+    @hubspot      logPayment(pay)
+}
+
+// ---------------------------
+// 4.  Utility Helpers (pseudocode)
+// ---------------------------
+function lookupReviewer(county: string) -> Party {...}
+function calcFees(app: PermitApplication) -> money {...}
+function agency(name: string) -> Party {...}
