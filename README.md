@@ -40,7 +40,7 @@ This syntax keeps the language minimal while remaining expressive across domains
 ## CLI Usage
 
 The repository provides a small command line tool for validating NFL graphs and
-exporting them as an OpenAPI specification:
+exporting them as an OpenAPI specification or other semantic formats:
 
 ```bash
 $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
@@ -48,6 +48,18 @@ $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
 
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
+
+To export a JSON-LD representation or an OWL/Turtle file use the new
+`--export-jsonld` and `--export-owl` options. Additional helpers can produce
+GeoJSON and a very small IFC text export:
+
+```bash
+$ python -m cli.nfl_cli examples/simple.json \
+    --export-jsonld graph.jsonld \
+    --export-owl graph.ttl \
+    --export-geojson graph.geojson \
+    --export-ifc graph.ifc
+```
 
 ## Pilot Platform Mappings
 
