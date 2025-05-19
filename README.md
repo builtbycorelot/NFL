@@ -49,10 +49,3 @@ $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
 
-A multi-platform example is provided in `examples/multi_platform.json`. It links
-Smartsheet rows, GitHub issues, HubSpot contacts and QuickBooks invoices to the
-OpenPermit and OpenTax nodes. Validate it via:
-
-```bash
-$ python -m cli.nfl_cli examples/multi_platform.json
-```
