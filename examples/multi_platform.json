@@ -1,0 +1,22 @@
+{
+  "pack": "integration.multi_platform",
+  "nodes": [
+    {"name": "address", "type": "Address"},
+    {"name": "permit", "type": "BuildingPermit"},
+    {"name": "parcel", "type": "Property"},
+    {"name": "tax_bill", "type": "TaxBill"},
+    {"name": "ss_row", "type": "Row"},
+    {"name": "github_issue", "type": "Issue"},
+    {"name": "hubspot_contact", "type": "Contact"},
+    {"name": "qb_invoice", "type": "Invoice"}
+  ],
+  "edges": [
+    {"from": "address", "to": "permit"},
+    {"from": "parcel", "to": "tax_bill"},
+    {"from": "ss_row", "to": "permit"},
+    {"from": "github_issue", "to": "permit"},
+    {"from": "hubspot_contact", "to": "permit"},
+    {"from": "qb_invoice", "to": "tax_bill"},
+    {"from": "qb_invoice", "to": "permit"}
+  ]
+}
