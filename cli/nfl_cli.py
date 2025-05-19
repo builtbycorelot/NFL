@@ -4,7 +4,6 @@
 import argparse
 import json
 import os
-import sys
 
 from . import nfl_to_openapi
 
@@ -29,7 +28,7 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
         return False
 
     try:
-        schema = load_json(schema_path)
+        load_json(schema_path)
     except Exception as exc:
         print(f"Failed to load schema '{schema_path}': {exc}")
         return False
