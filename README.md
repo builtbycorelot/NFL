@@ -48,3 +48,13 @@ $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
 
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
+
+## Pilot Platform Mappings
+
+The repository also includes a more complete example under the `pilot` file.
+This schema combines the minimal `open_permit.json` and `open_tax.json`
+concepts into a unified model with nodes such as `Party`, `Task`,
+`Transaction`, and `PermitApplication`. Each of these nodes contains
+`@platform` sections that map its fields to specific SaaS providers,
+demonstrating how the same semantics can synchronize data across Smartsheet,
+Intuit QuickBooks Online, and HubSpot.
