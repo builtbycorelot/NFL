@@ -51,7 +51,7 @@ The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 
 ## Pilot Platform Mappings
 
-The repository also includes a more complete example under the `pilot` file.
+The repository also includes a more complete example under the `pilot.nfl` file.
 This schema combines the minimal `open_permit.json` and `open_tax.json`
 concepts into a unified model with nodes such as `Party`, `Task`,
 `Transaction`, and `PermitApplication`. Each of these nodes contains
