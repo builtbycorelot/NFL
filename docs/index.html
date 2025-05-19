@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NFL Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script defer src="main.js"></script>
+<style>
+  #graph svg { border: 1px solid #ccc; }
+</style>
+</head>
+<body>
+<section class="section">
+<div class="container">
+<h1 class="title">NodeForm Explorer</h1>
+<p>This interactive page lets you explore example NodeForm packs, run minimal validation tests, and quickly open a pull request with your improvements.</p>
+
+<div class="field">
+<label class="label">Example Pack</label>
+<div class="control">
+<select id="packSelect" class="select"></select>
+</div>
+</div>
+
+<div class="buttons">
+<button id="loadBtn" class="button is-link">Visualize</button>
+<button id="testBtn" class="button is-info">Run Tests</button>
+<a id="prBtn" class="button is-success" target="_blank">Create Pull Request</a>
+</div>
+
+<div id="graph"></div>
+<pre id="testOutput"></pre>
+
+</div>
+</section>
+</body>
+</html>
