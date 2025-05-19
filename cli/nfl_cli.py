@@ -10,9 +10,21 @@ from . import nfl_to_openapi
 
 
 def load_json(path: str):
-    """Load a JSON file from *path*."""
-    with open(path, 'r', encoding='utf-8') as fh:
-        return json.load(fh)
+    """Load a JSON file from *path*.
+
+    Any :class:`OSError` encountered while opening the file or
+    :class:`json.JSONDecodeError` raised during parsing is re-raised with
+    additional context describing the path being processed.
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except OSError as exc:
+        raise IOError(f"Failed to read '{path}': {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise json.JSONDecodeError(
+            f"Invalid JSON in '{path}': {exc.msg}", exc.doc, exc.pos
+        ) from exc
 
 
 def validate_file(nfl_path: str, schema_path: str) -> bool:
@@ -24,14 +36,20 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
     """
     try:
         nfl = load_json(nfl_path)
-    except Exception as exc:  # broad exception for CLI feedback
-        print(f"Failed to load '{nfl_path}': {exc}")
+    except IOError as exc:
+        print(exc)
+        return False
+    except json.JSONDecodeError as exc:
+        print(exc)
         return False
 
     try:
         schema = load_json(schema_path)
-    except Exception as exc:
-        print(f"Failed to load schema '{schema_path}': {exc}")
+    except IOError as exc:
+        print(exc)
+        return False
+    except json.JSONDecodeError as exc:
+        print(exc)
         return False
 
     # minimal manual validation since jsonschema is unavailable
