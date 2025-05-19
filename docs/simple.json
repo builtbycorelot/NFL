@@ -1,0 +1,11 @@
+{
+  "pack": "meta.core",
+  "nodes": [
+    {"name": "x", "type": "ℝ"},
+    {"name": "y", "type": "ℝ"}
+  ],
+  "edges": [
+    {"from": "x", "to": "y"}
+  ]
+}
+
