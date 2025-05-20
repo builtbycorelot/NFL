@@ -58,3 +58,5 @@ concepts into a unified model with nodes such as `Party`, `Task`,
 `@platform` sections that map its fields to specific SaaS providers,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
+
+For details on the DSL used in `pilot` see [docs/pilot_dsl.md](docs/pilot_dsl.md). The helper `cli/dsl_to_json.py` converts the file into JSON for `nfl_cli`.
