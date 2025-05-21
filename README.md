@@ -49,6 +49,17 @@ $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
 
+## NAICS Example and Converters
+
+The `examples/naics.json` file enumerates major two-digit NAICS sector codes in
+NFL form. Converter helpers in `nfl_converters.py` and the accompanying test
+suite under `tests/` demonstrate exporting this graph as JSON-LD, OWL, CityJSON
+and GeoJSON:
+
+```bash
+$ python -m tests.test_formats
+```
+
 ## Pilot Platform Mappings
 
 The repository also includes a more complete example under the `pilot` file.
