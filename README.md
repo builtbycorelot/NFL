@@ -51,10 +51,15 @@ The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 
 ## Pilot Platform Mappings
 
-The repository also includes a more complete example under the `pilot` file.
+The repository also includes a more complete example under the `pilot.nfl` file.
 This schema combines the minimal `open_permit.json` and `open_tax.json`
 concepts into a unified model with nodes such as `Party`, `Task`,
 `Transaction`, and `PermitApplication`. Each of these nodes contains
 `@platform` sections that map its fields to specific SaaS providers,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
+
+`pilot.nfl` uses the plain text syntax defined in `spec/grammar.ebnf`. Lines
+starting with `//` are comments. The CLI utilities operate on the JSON graph
+format in `schema/nfl.schema.json`, so to validate or export this example you
+must first translate it into that JSON structure.
