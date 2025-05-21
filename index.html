@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NodeForm Language</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+<h1>NodeForm Language (NFL)</h1>
+<p>NodeForm unifies computation and policy through a <em>semantics-first graph syntax</em>. The repository distills the core DSL where nodes and edges express relationships that can compile to diverse runtimes such as WASM, CUDA, and neuromorphic hardware.</p>
+<h2>Standards and Interoperability</h2>
+<p>NFL aims to align with emerging W3C efforts around describing <q>things</q> and data models so that schemas can tie out to major formats across the web.</p>
+<h2>Visualization</h2>
+<p>Graphs expressed in NFL can be rendered with <a href="https://d3js.org/">D3.js</a> for interactive exploration of nodes and their <code>rel^n</code> connections.</p>
+<h2>Process and Communications</h2>
+<p>The language provides a way to model processes and standard communication patterns using simple <code>node</code> and <code>edge</code> constructs.</p>
+<h2>Example Snippet</h2>
+<pre><code>pack meta.core
+
+node Party { ... }
+edge submits : Party -&gt; PermitApplication
+</code></pre>
+<p>CLI tooling validates graphs and can export an OpenAPI document:</p>
+<pre><code>$ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json</code></pre>
+<footer>
+<p>For more details see the README in this repository.</p>
+</footer>
+</body>
+</html>
