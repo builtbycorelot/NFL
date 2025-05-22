@@ -63,7 +63,7 @@ $ python -m cli.nfl_cli examples/simple.json \
 
 ## Pilot Platform Mappings
 
-The repository also includes a more complete example under the `pilot` file.
+The repository also includes a more complete example under the `pilot.nfl` file.
 This schema combines the minimal `open_permit.json` and `open_tax.json`
 concepts into a unified model with nodes such as `Party`, `Task`,
 `Transaction`, and `PermitApplication`. Each of these nodes contains
