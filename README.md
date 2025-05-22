@@ -97,4 +97,12 @@ concepts into a unified model with nodes such as `Party`, `Task`,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
+## License
 
+This project is licensed under the [MIT License](LICENSE).
+
+## Security Contact
+
+For general or security-related questions, please email [security@builtbycorelot.com](mailto:security@builtbycorelot.com).
+
+<!-- Best Practices badge will be added once the project is registered -->
