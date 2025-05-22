@@ -8,7 +8,20 @@ SCHEMA = Path(__file__).resolve().parents[1] / "schema" / "nfl.schema.json"
 
 
 def test_validation_passes():
+    """Test that validation passes for a valid NFL file."""
     assert nfl_cli.validate_file(str(EXAMPLE), str(SCHEMA))
+
+
+def test_validation_fails_with_invalid_json(tmp_path):
+    """Test that validation fails with invalid JSON."""
+    invalid_file = tmp_path / "invalid.json"
+    invalid_file.write_text("{not valid json")
+    assert not nfl_cli.validate_file(str(invalid_file), str(SCHEMA))
+
+
+def test_validation_fails_with_missing_schema():
+    """Test that validation fails with a missing schema file."""
+    assert not nfl_cli.validate_file(str(EXAMPLE), "nonexistent_schema.json")
 
 
 def test_cli_export_openapi(tmp_path):
