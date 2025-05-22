@@ -48,6 +48,7 @@ $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
 
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
+Additional examples can be found in `examples/open_permit.json`, `examples/open_tax.json`, and `examples/rel_n.json`.
 
 To export a JSON-LD representation or an OWL/Turtle file use the new
 `--export-jsonld` and `--export-owl` options. Additional helpers can produce
