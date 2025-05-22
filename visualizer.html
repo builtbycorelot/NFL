@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFL Graph IR Viewer</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 1em; }
+    #graph { width: 100%; height: 60vh; border: 1px solid #ccc; }
+    textarea { width: 100%; height: 200px; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>NFL Graph IR Viewer</h1>
+  <div id="graph"></div>
+  <textarea id="json"></textarea>
+  <button id="renderBtn">Render</button>
+  <script>
+    async function loadDefault() {
+      const resp = await fetch('index.nfl.json');
+      const data = await resp.json();
+      document.getElementById('json').value = JSON.stringify(data, null, 2);
+      render(data);
+    }
+
+    function render(data) {
+      const svg = d3.select('#graph').html('').append('svg')
+        .attr('width', document.getElementById('graph').clientWidth)
+        .attr('height', document.getElementById('graph').clientHeight);
+
+      const nodes = data.nodes.map(n => ({ id: n.name, label: n.name }));
+      const links = data.edges.map(e => ({ source: e.from, target: e.to, label: e.type }));
+
+      const simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).id(d => d.id).distance(120))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(svg.attr('width') / 2, svg.attr('height') / 2));
+
+      const link = svg.append('g')
+        .selectAll('line')
+        .data(links)
+        .enter().append('line')
+        .attr('stroke', '#999');
+
+      const node = svg.append('g')
+        .selectAll('circle')
+        .data(nodes)
+        .enter().append('circle')
+        .attr('r', 8)
+        .attr('fill', '#4a90e2')
+        .call(d3.drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended));
+
+      const label = svg.append('g')
+        .selectAll('text')
+        .data(nodes)
+        .enter().append('text')
+        .text(d => d.label)
+        .attr('font-size', 10)
+        .attr('dx', 12)
+        .attr('dy', '.35em');
+
+      simulation.on('tick', () => {
+        link.attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+        node.attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+        label.attr('x', d => d.x)
+             .attr('y', d => d.y);
+      });
+
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x; d.fy = d.y;
+      }
+      function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+      function dragended(event, d) { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+    }
+
+    document.getElementById('renderBtn').onclick = () => {
+      try {
+        const data = JSON.parse(document.getElementById('json').value);
+        render(data);
+      } catch(err) {
+        alert('Invalid JSON');
+      }
+    };
+
+    loadDefault();
+  </script>
+</body>
+</html>
