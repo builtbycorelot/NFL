@@ -166,13 +166,11 @@ export function convertToNFL(content, format) {
       return out.join('\n');
     }
     case 'yaml': {
-      const regex = /^(\w+):\s*\n\s*[^\n]*name:\s*"?([^"\n]+)"?/gm;
-      const lines = [];
-      let m;
-      while ((m = regex.exec(content))) {
-        lines.push(`node:${m[1]} | etikedo:"${m[2]}"`);
-      }
-      return lines.join('\n');
+      const yaml = require('js-yaml');
+      const doc = yaml.load(content);
+      return Object.entries(doc)
+        .map(([id, { name }]) => `node:${id} | etikedo:"${name}"`)
+        .join('\n');
     }
     default:
       throw new Error(`Unsupported format: ${format}`);
