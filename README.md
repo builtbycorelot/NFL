@@ -40,7 +40,7 @@ This syntax keeps the language minimal while remaining expressive across domains
 ## CLI Usage
 
 The repository provides a small command line tool for validating NFL graphs and
-exporting them as an OpenAPI specification:
+exporting them as an OpenAPI specification or other semantic formats:
 
 ```bash
 $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
@@ -48,13 +48,33 @@ $ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
 
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
+Additional examples can be found in `examples/open_permit.json`, `examples/open_tax.json`, and `examples/rel_n.json`.
+
+To export a JSON-LD representation or an OWL/Turtle file use the new
+`--export-jsonld` and `--export-owl` options. Additional helpers can produce
+GeoJSON and a very small IFC text export:
+
+```bash
+$ python -m cli.nfl_cli examples/simple.json \
+    --export-jsonld graph.jsonld \
+    --export-owl graph.ttl \
+    --export-geojson graph.geojson \
+    --export-ifc graph.ifc
+```
 
 ## Pilot Platform Mappings
 
-The repository also includes a more complete example under the `pilot` file.
+The repository also includes a more complete example under the `pilot.nfl` file.
 This schema combines the minimal `open_permit.json` and `open_tax.json`
 concepts into a unified model with nodes such as `Party`, `Task`,
 `Transaction`, and `PermitApplication`. Each of these nodes contains
 `@platform` sections that map its fields to specific SaaS providers,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
+
+## Web Viewer
+
+A minimal HTML/JavaScript viewer is provided under the `docs/` directory so the
+examples can be explored in a browser. It uses D3.js to render nodes and edges.
+To try it locally, open `docs/index.html` in a web browser or enable GitHub
+Pages on the repository and navigate to the published site.

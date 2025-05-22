@@ -1,2 +1,2 @@
-jsonschema
 pytest
+jsonschema
