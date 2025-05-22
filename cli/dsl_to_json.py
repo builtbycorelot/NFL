@@ -37,22 +37,22 @@ def parse_file(path: str) -> Dict[str, Any]:
                     # by reading subsequent lines until the node block ends
                 continue
             if line.startswith("edge ") and "->" in line:
-                from_part: str
-                to_part: str
-                m = re.match(r"edge\s+\w+\s*:(.*?)->(.*)", line)
-                if m:
-                    from_part = m.group(1).strip()
-                    to_part = m.group(2).strip()
-                else:
-                    m = re.match(r"edge\s+(\w+)\s*->\s*(\w+)", line)
-                    if not m:
-                        continue
-                    from_part = m.group(1)
-                    to_part = m.group(2)
-                to_part = to_part.rstrip("{").strip().strip('"')
-                edges.append({"from": from_part, "to": to_part})
-                continue
+                # A more robust regex that can handle both formats described in the docs
+                m = re.match(r"edge\s+(\w+)\s*(?::\s*)?([^-]*?)\s*->\s*([^{]*)", line)
+                if not m:
+                    continue
 
+                from_node = m.group(1)
+                from_field = m.group(2).strip() if m.group(2) else ""
+                to_node = m.group(3).strip().strip('"')
+
+                edge = {"from": from_node}
+                if from_field:
+                    edge["from_field"] = from_field
+                edge["to"] = to_node
+
+                edges.append(edge)
+                continue
     return {"pack": pack, "nodes": nodes, "edges": edges}
 
 
