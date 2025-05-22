@@ -1,113 +1,46 @@
 # NodeForm Language (NFL)
 
-This repository contains the early notes for the **NodeForm Language**. NFL aims to unify computation and policy through a semantics-first graph syntax.
+NodeForm Language is a minimal graph notation for declaring computation and policy together. Nodes and edges build a self-describing graph that can execute across runtimes while tracking provenance and risk.
 
-## Distilled Essence
+## Why NFL and Why Now?
 
-```
-pack meta.core            # zero-th dialect
+* Software and regulations keep colliding. A shared semantic layer lets both evolve together.
+* Graphs express relationships better than ad-hoc APIs.
+* Hardware trust anchors such as **PLight.token** allow verified execution of graph logic.
 
-# define primitive meaning
-type ℝ        { doc = "real-32" }
-type Spike    { doc = "0|1 event" }
+## Core Verbs
 
-# found-object: pure function node
-fn ⊕ (a:ℝ, b:ℝ) -> ℝ { impl = { op = "add" } }
+| Verb | Purpose |
+|------|---------|
+| `node` | define an entity |
+| `edge` | relate nodes |
+| `fn`   | declare a callable node |
+| `trait` | annotate behavior |
+| `pack` | group a dialect |
+| `impl` | provide the implementation |
 
-# neuromorphic: spike neuron with STDP plasticity
-fn Neuron(id:Int) -> Spike {
-  traits = [spike, stdp]
-  impl   = { v_th=1.0, leak=0.1 }
-}
+The grammar lives in [`index.nfl.json`](index.nfl.json) and can be explored using the [Interactive Graph Viewer](visualizer.html).
 
-edge ⊕ -> Neuron { @mcp.topic("lab.snn.input") }
-```
+## Vision
 
-NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WASM, CUDA, neuromorphic).
+NFL graphs compile to multiple targets (JSON‑LD, OWL, GeoJSON) while preserving meaning. The `SemanticLedger` and `CostModel` nodes track provenance and resources. Combined with `PLight.token` hardware, the system supports transparent and trusted execution.
 
-## Core Lexicon
+Session: **NFL_Launch_Visual_IR_Stack_0522**
 
-* `node` – declare a node
-* `edge` – relate nodes
-* `pack` – import dialects
-* `fn` – alias for node
-* `@call` – invoke a node
-* `trait` – qualify behavior
-* `impl` – provide the implementation
+## Live Visuals
 
-## Installation
+* [Launch Page](index.html) – repository overview and links
+* [Graph IR Viewer](visualizer.html) – loads `index.nfl.json` automatically.
+* [Context](docs/context.md) – repository anchor and semantic index.
 
-Install the CLI in editable mode:
+Pre-rendered outputs are located in the [`codecs/`](codecs/) folder. A lightweight GitHub Pages site is hosted at [builtbycorelot.github.io/NFL](https://builtbycorelot.github.io/NFL) for quick access to the viewer.
 
-```bash
-$ pip install -e .
-```
+Stub runtime packs are provided in [`packs/`](packs/) for future execution tests.
 
-After installation, use the `nfl-cli` command to validate graphs:
+## ContextMD
 
-```bash
-$ nfl-cli examples/simple.json --export-openapi graph.openapi.json
-```
-
-This syntax keeps the language minimal while remaining expressive across domains.
-
-## CLI Usage
-
-The repository provides a small command line tool for validating NFL graphs and
-exporting them as an OpenAPI specification or other semantic formats:
-
-```bash
-$ nfl-cli examples/simple.json --export-openapi graph.openapi.json
-```
-
-The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
-`/nodes` and `/edges` endpoints that describe the graph structure.
-Additional examples can be found in `examples/open_permit.json`, `examples/open_tax.json`, and `examples/rel_n.json`.
-
-To export a JSON-LD representation or an OWL/Turtle file use the new
-`--export-jsonld` and `--export-owl` options. Additional helpers can produce
-GeoJSON and a very small IFC text export:
-
-```bash
-$ python -m cli.nfl_cli examples/simple.json \
-    --export-jsonld graph.jsonld \
-    --export-owl graph.ttl \
-    --export-geojson graph.geojson \
-    --export-ifc graph.ifc
-```
-
-## NAICS Example and Converters
-
-The `examples/naics.json` file enumerates major two-digit NAICS sector codes in
-NFL form. Converter helpers in `nfl_converters.py` and the accompanying test
-suite under `tests/` demonstrate exporting this graph as JSON-LD, OWL, CityJSON
-and GeoJSON:
-
-```bash
-$ python -m tests.test_formats
-```
-
-## Pilot Platform Mappings
-
-The repository also includes a more complete example under the `pilot.nfl` file.
-This schema combines the minimal `open_permit.json` and `open_tax.json`
-concepts into a unified model with nodes such as `Party`, `Task`,
-`Transaction`, and `PermitApplication`. Each of these nodes contains
-`@platform` sections that map its fields to specific SaaS providers,
-demonstrating how the same semantics can synchronize data across Smartsheet,
-Intuit QuickBooks Online, and HubSpot.
-
+See [`docs/context.md`](docs/context.md) for a high level summary and links to related documents.
 
 ## License
-## Citation
-## Changelog
-See the [CHANGELOG](CHANGELOG.md) for release history.
-If you use this project in your research or software, please cite it using the metadata in [CITATION.cff](CITATION.cff).
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Security Contact
-
-For general or security-related questions, please email [security@sheetpros.com](mailto:security@sheetpros.com).
-
-<!-- Best Practices badge will be added once the project is registered -->
