@@ -97,4 +97,6 @@ concepts into a unified model with nodes such as `Party`, `Task`,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
+## Citation
 
+If you use this project in your research or software, please cite it using the metadata in [CITATION.cff](CITATION.cff).
