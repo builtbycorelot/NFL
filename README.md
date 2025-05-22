@@ -72,9 +72,3 @@ concepts into a unified model with nodes such as `Party`, `Task`,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
-## Web Viewer
-
-A minimal HTML/JavaScript viewer is provided under the `docs/` directory so the
-examples can be explored in a browser. It uses D3.js to render nodes and edges.
-To try it locally, open `docs/index.html` in a web browser or enable GitHub
-Pages on the repository and navigate to the published site.
