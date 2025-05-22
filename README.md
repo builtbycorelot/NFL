@@ -87,14 +87,3 @@ demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
 
-## Running Tests
-
-The project uses `pytest` for its test suite. After installing the
-requirements (only `pytest` is needed), run the tests from the repository
-root:
-
-```bash
-$ pytest
-```
-
-
