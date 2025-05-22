@@ -98,3 +98,5 @@ demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
 
+## Changelog
+See the [CHANGELOG](CHANGELOG.md) for release history.
