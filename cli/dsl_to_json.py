@@ -30,9 +30,12 @@ def parse_file(path: str) -> Dict[str, Any]:
             if line.startswith("node "):
                 m = re.match(r"node\s+(\w+)", line)
                 if m:
-                    nodes.append({"name": m.group(1), "type": "record"})
+                    # Initialize node with basic properties
+                    node = {"name": m.group(1), "type": "record", "fields": []}
+                    nodes.append(node)
+                    # Here we would need additional logic to parse the node body
+                    # by reading subsequent lines until the node block ends
                 continue
-
             if line.startswith("edge ") and "->" in line:
                 from_part: str
                 to_part: str
