@@ -99,4 +99,8 @@ Intuit QuickBooks Online, and HubSpot.
 
 ## Citation
 
+=
+## Changelog
+See the [CHANGELOG](CHANGELOG.md) for release history.
 If you use this project in your research or software, please cite it using the metadata in [CITATION.cff](CITATION.cff).
+
