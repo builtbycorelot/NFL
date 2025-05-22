@@ -30,7 +30,7 @@ def test_cli_invalid(tmp_path, capsys):
     captured = capsys.readouterr()
     assert exit_code == 1
     assert 'Validation error' in captured.out
-=======
+# (The merge conflict marker and the old test definitions have been removed)
 from cli.nfl_cli import validate_file
 from cli.nfl_to_openapi import convert_file
 
