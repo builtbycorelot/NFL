@@ -5,6 +5,8 @@ import argparse
 import json
 import os
 
+import jsonschema
+
 from . import nfl_to_openapi
 from . import nfl_to_semantics
 
@@ -31,8 +33,7 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
     """Validate *nfl_path* against *schema_path*.
 
     Returns ``True`` if the file is valid, otherwise ``False``.
-    This implementation performs a minimal structural validation matching the
-    provided schema.
+    Validation uses ``jsonschema`` to ensure the file matches the schema.
     """
     try:
         nfl = load_json(nfl_path)
@@ -57,38 +58,14 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
         print(f"Failed to load schema '{schema_path}': {exc}")
         return False
 
-    # minimal manual validation since jsonschema is unavailable
-    if not isinstance(nfl, dict):
-        print("NFL file must be a JSON object")
+    try:
+        jsonschema.validate(nfl, schema)
+    except jsonschema.ValidationError as exc:
+        print(f"Validation error: {exc.message}")
         return False
-
-    if "pack" not in nfl or not isinstance(nfl["pack"], str):
-        print("'pack' property missing or not a string")
+    except jsonschema.SchemaError as exc:
+        print(f"Invalid schema: {exc}")
         return False
-
-    if "nodes" in nfl:
-        if not isinstance(nfl["nodes"], list):
-            print("'nodes' must be a list")
-            return False
-        for node in nfl["nodes"]:
-            if not isinstance(node, dict):
-                print("each node must be an object")
-                return False
-            if "name" not in node or "type" not in node:
-                print("node entries require 'name' and 'type'")
-                return False
-
-    if "edges" in nfl:
-        if not isinstance(nfl["edges"], list):
-            print("'edges' must be a list")
-            return False
-        for edge in nfl["edges"]:
-            if not isinstance(edge, dict):
-                print("each edge must be an object")
-                return False
-            if "from" not in edge or "to" not in edge:
-                print("edge entries require 'from' and 'to'")
-                return False
 
     return True
 
