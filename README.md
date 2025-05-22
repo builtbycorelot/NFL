@@ -98,3 +98,16 @@ demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
 
+## License
+## Citation
+## Changelog
+See the [CHANGELOG](CHANGELOG.md) for release history.
+If you use this project in your research or software, please cite it using the metadata in [CITATION.cff](CITATION.cff).
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Security Contact
+
+For general or security-related questions, please email [security@sheetpros.com](mailto:security@sheetpros.com).
+
+<!-- Best Practices badge will be added once the project is registered -->
