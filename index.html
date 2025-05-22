@@ -1,29 +1,538 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="eo">
 <head>
-<meta charset="UTF-8">
-<title>NodeForm Language</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFL: Neŭra Esplorilo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <style>
+    :root {
+      --bg: #fff;
+      --bg-alt: #f5f5f5;
+      --txt: #666;
+      --blue: #4a90e2;
+      --grey: #666;
+      --light-grey: #e5e5e5;
+      --radius: .4rem;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); line-height: 1.4; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--grey); }
+    h1, h2, h3 { font-weight: 600; color: var(--blue); margin-bottom: .5em; }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1rem; }
+    p { margin-bottom: .8em; }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 1.5rem .8rem; }
+    .section { padding: 2rem 0; border-bottom: 1px solid var(--light-grey); }
+    .hero { text-align: center; padding: 2.5rem .8rem 1.5rem; }
+    .grid { display: grid; gap: .8rem; }
+    @media (min-width: 600px) { .grid.columns-2 { grid-template-columns: 1fr 1fr; } }
+    pre, textarea {
+      background: var(--bg-alt);
+      border: 1px solid var(--light-grey);
+      border-radius: var(--radius);
+      padding: .8rem;
+      font-size: .8rem;
+      color: var(--txt);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    textarea { width: 100%; min-height: 120px; resize: vertical; }
+    button, input[type="file"] {
+      background: var(--blue);
+      border: none;
+      border-radius: var(--radius);
+      padding: .4rem .9rem;
+      color: #fff;
+      font-size: .8rem;
+      cursor: pointer;
+      margin-top: .4rem;
+      transition: background 0.2s;
+    }
+    button:hover, input[type="file"]:hover { background: var(--grey); }
+    .card { background: var(--bg-alt); padding: .8rem; border-radius: var(--radius); border: 1px solid var(--light-grey); }
+    #graphHero, #graphSpec, #graphPlay, #graphCrossWalk { height: 280px; border: 1px solid var(--light-grey); border-radius: var(--radius); background: #fff; margin-top: .8rem; }
+    .controls { display: flex; justify-content: center; gap: .8rem; margin-bottom: .8rem; }
+    #search, select { padding: .4rem; width: 120px; background: var(--bg-alt); color: var(--txt); border: 1px solid var(--blue); border-radius: var(--radius); font-size: .8rem; }
+    .tooltip {
+      position: absolute;
+      background: var(--bg-alt);
+      padding: .6rem;
+      border: 1px solid var(--blue);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 160px;
+      z-index: 100;
+      display: none;
+      font-size: .75rem;
+      color: var(--txt);
+    }
+    .error { color: #e74c3c; font-size: .75rem; text-align: center; margin: .4rem 0; }
+  </style>
 </head>
 <body>
-<h1>NodeForm Language (NFL)</h1>
-<p>NodeForm unifies computation and policy through a <em>semantics-first graph syntax</em>. The repository distills the core DSL where nodes and edges express relationships that can compile to diverse runtimes such as WASM, CUDA, and neuromorphic hardware.</p>
-<h2>Standards and Interoperability</h2>
-<p>NFL aims to align with emerging W3C efforts around describing <q>things</q> and data models so that schemas can tie out to major formats across the web.</p>
-<h2>Visualization</h2>
-<p>Graphs expressed in NFL can be rendered with <a href="https://d3js.org/">D3.js</a> for interactive exploration of nodes and their <code>rel^n</code> connections.</p>
-<h2>Process and Communications</h2>
-<p>The language provides a way to model processes and standard communication patterns using simple <code>node</code> and <code>edge</code> constructs.</p>
-<h2>Example Snippet</h2>
-<pre><code>pack meta.core
+  <header class="hero">
+    <div class="wrap">
+      <h1>NFL: Scio-Kadro</h1>
+      <p>Minimuma grafeo por unuigi normojn — mem-definanta, verbo-gvidata.</p>
+      <div class="controls">
+        <input type="text" id="search" placeholder="Serĉi nodon...">
+      </div>
+      <div id="graphHero"></div>
+      <p class="error" id="heroGraphError"></p>
+    </div>
+  </header>
 
-node Party { ... }
-edge submits : Party -&gt; PermitApplication
-</code></pre>
-<p>CLI tooling validates graphs and can export an OpenAPI document:</p>
-<pre><code>$ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json</code></pre>
-<footer>
-<p>For more details see the README in this repository.</p>
-</footer>
+  <main>
+    <section class="wrap section" id="verboj">
+      <h2>Sep Verboj</h2>
+      <div class="grid columns-2">
+        <div class="card"><h3>node</h3><p>Difinas enton.</p></div>
+        <div class="card"><h3>edge</h3><p>Relatigas nodojn.</p></div>
+        <div class="card"><h3>trait</h3><p>Aldonas metadatumojn.</p></div>
+        <div class="card"><h3>pack</h3><p>Grupigas logikon.</p></div>
+        <div class="card"><h3>fn</h3><p>Deklaras funkcion.</p></div>
+        <div class="card"><h3>impl</h3><p>Realigas funkcion.</p></div>
+        <div class="card"><h3>@call</h3><p>Vokas funkcion.</p></div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="spec">
+      <h2>Spec v1.0</h2>
+      <p>Redaktu kaj vidigu la mem-definantan specon:</p>
+      <textarea id="specCode">
+node:NFL_Speco | id_spaco:"nfl.spec" | etikedo:"NFL Speco"
+pack:NFL_Leksikono | parto_de_speco:"NFL_Speco"
+edge:NFL_Leksikono -> NFL_Speco | rilato:"parto_de_speco"
+fn:NFL_Leksikono.node | etikedo:"Verbo: node"
+edge:NFL_Leksikono.node -> NFL_Leksikono | rilato:"difinas"
+      </textarea>
+      <button onclick="render('spec')">Vidigu</button>
+      <div id="graphSpec"></div>
+      <p class="error" id="specGraphError"></p>
+    </section>
+
+    <section class="wrap section" id="playground">
+      <h2>Ludkampo</h2>
+      <div class="controls">
+        <select id="format">
+          <option value="nfl">NFL</option>
+          <option value="jsonld">JSON-LD</option>
+          <option value="rdf">RDF/Turtle</option>
+          <option value="yaml">YAML</option>
+          <option value="geojson">GeoJSON</option>
+          <option value="csv">CSV</option>
+          <option value="xml">XML</option>
+        </select>
+        <input type="file" id="fileInput" accept=".nfl,.json,.ttl,.yaml,.geojson,.csv,.xml">
+        <button onclick="downloadFile()">Elŝutu</button>
+      </div>
+      <textarea id="playCode">
+node:ISO_27001 | etikedo:"ISO 27001" | domajno:"Teknologio"
+node:PCI_DSS | etikedo:"PCI DSS" | domajno:"Teknologio"
+edge:ISO_27001 -> PCI_DSS | rilato:"rilata"
+node:HIPAA | etikedo:"HIPAA" | domajno:"Medicino"
+node:IFRS | etikedo:"IFRS" | domajno:"Financo"
+      </textarea>
+      <button onclick="render('play')">Vidigu</button>
+      <div id="graphPlay"></div>
+      <p class="error" id="playGraphError"></p>
+    </section>
+
+    <section class="wrap section" id="crosswalk">
+      <h2>W3C al NAICS</h2>
+      <textarea id="crossWalkCode">
+node:ExampleCompany | etikedo:"Example Company" | tipo:"SchemaOrg_Organization"
+trait:ExampleCompany | industrio:"Software Publishers"
+node:NAICS_511210 | etikedo:"511210 - Software Publishers"
+edge:ExampleCompany -> NAICS_511210 | rilato:"havas_industrion"
+      </textarea>
+      <button onclick="render('crosswalk')">Vidigu</button>
+      <div id="graphCrossWalk"></div>
+      <p class="error" id="crossWalkGraphError"></p>
+    </section>
+
+    <section class="wrap section" id="komparo">
+      <h2>Komparo</h2>
+      <div class="grid">
+        <div class="card"><h3>NFL</h3><pre>
+node:ISO_27001 | etikedo:"ISO 27001"
+        </pre><p>Klaro: Alta<br>Esprimivo: Alta<br>Interop: Bonega</p></div>
+        <div class="card"><h3>JSON-LD</h3><pre>
+{
+  "@context": "http://schema.org",
+  "@type": "Thing",
+  "name": "ISO 27001"
+}
+        </pre><p>Klaro: Meza<br>Esprimivo: Alta<br>Interop: Bona</p></div>
+        <div class="card"><h3>RDF</h3><pre>
+<ISO_27001> a schema:Thing ; schema:name "ISO 27001" .
+        </pre><p>Klaro: Malalta<br>Esprimivo: Alta<br>Interop: Bona</p></div>
+        <div class="card"><h3>YAML</h3><pre>
+ISO_27001:
+  type: Thing
+  name: ISO 27001
+        </pre><p>Klaro: Alta<br>Esprimivo: Meza<br>Interop: Meza</p></div>
+        <div class="card"><h3>GeoJSON</h3><pre>
+{
+  "type": "Feature",
+  "properties": {"name": "ISO 27001"},
+  "geometry": null
+}
+        </pre><p>Klaro: Meza<br>Esprimivo: Malalta<br>Interop: Bona</p></div>
+        <div class="card"><h3>CSV</h3><pre>
+id,etikedo
+ISO_27001,ISO 27001
+        </pre><p>Klaro: Alta<br>Esprimivo: Malalta<br>Interop: Bona</p></div>
+        <div class="card"><h3>XML</h3><pre>
+<thing id="ISO_27001">
+  <name>ISO 27001</name>
+</thing>
+        </pre><p>Klaro: Meza<br>Esprimivo: Meza<br>Interop: Bona</p></div>
+      </div>
+    </section>
+
+    <section class="wrap section" style="text-align:center;">
+      <h2>Aliĝu</h2>
+      <p><a href="https://github.com/NodeFormLanguage/NFL">GitHub</a> • <a href="https://github.com/NodeFormLanguage/NFL/discussions">Diskutoj</a></p>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script type="module">
+    import * as NFL from './nfl.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const errorId = 'heroGraphError';
+      try {
+        renderHeroGraph();
+        render('spec');
+        render('play');
+        render('crosswalk');
+        setupSearch();
+        setupFileInput();
+      } catch (e) {
+        console.error('Init error:', e);
+        document.getElementById(errorId).textContent = `Eraro: Malsukcesis ŝarĝi apon. (${e.message})`;
+      }
+    });
+
+    async function render(which) {
+      const src = document.getElementById(which === 'spec' ? 'specCode' : which === 'play' ? 'playCode' : 'crossWalkCode').value;
+      const container = document.getElementById(which === 'spec' ? 'graphSpec' : which === 'play' ? 'graphPlay' : 'graphCrossWalk');
+      const errorId = which === 'spec' ? 'specGraphError' : which === 'play' ? 'playGraphError' : 'crossWalkGraphError';
+      try {
+        const graph = NFL.executeNFL(src);
+        console.log('Graph:', graph);
+        container.innerHTML = '';
+
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const svg = d3.select(container)
+          .append('svg')
+          .attr('width', width)
+          .attr('height', height);
+        const g = svg.append('g');
+
+        const zoom = d3.zoom()
+          .scaleExtent([0.5, 2])
+          .on('zoom', e => g.attr('transform', e.transform));
+        svg.call(zoom);
+        svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8));
+
+        const nodes = graph.nodes ? Object.entries(graph.nodes).map(([id, node]) => ({
+          id,
+          label: node.label,
+          traits: node.traits
+        })) : [];
+        const links = graph.edges ? graph.edges.map(edge => ({
+          source: edge.source,
+          target: edge.target,
+          label: edge.relationship_type
+        })) : [];
+
+        if (!nodes.length) throw new Error('Neniuj nodoj');
+
+        const simulation = d3.forceSimulation(nodes)
+          .force('link', d3.forceLink(links).id(d => d.id).distance(80))
+          .force('charge', d3.forceManyBody().strength(-100))
+          .force('center', d3.forceCenter(0, 0))
+          .force('collision', d3.forceCollide().radius(20));
+
+        const link = g.append('g')
+          .selectAll('line')
+          .data(links)
+          .enter()
+          .append('line')
+          .attr('stroke', '#4a90e2')
+          .attr('stroke-opacity', 0.6)
+          .attr('stroke-width', 1);
+
+        const node = g.append('g')
+          .selectAll('circle')
+          .data(nodes)
+          .enter()
+          .append('circle')
+          .attr('r', 5)
+          .attr('fill', d => {
+            if (d.traits?.domajno === 'Teknologio' || d.id.includes('NFL_Spec')) return '#4a90e2';
+            if (d.traits?.domajno === 'Scienco' || d.id.includes('Leksikono')) return '#50c878';
+            if (d.traits?.domajno === 'Medicino') return '#f1c40f';
+            if (d.traits?.domajno === 'Financo') return '#e74c3c';
+            if (d.id.includes('NAICS')) return '#9b59b6';
+            return '#7f8c8d';
+          })
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 0.5)
+          .call(d3.drag()
+            .on('start', d => {
+              if (!d.active) simulation.alphaTarget(0.3).restart();
+              d.subject.fx = d.subject.x;
+              d.subject.fy = d.subject.y;
+            })
+            .on('drag', d => {
+              d.subject.fx = d.x;
+              d.subject.fy = d.y;
+            })
+            .on('end', d => {
+              if (!d.active) simulation.alphaTarget(0);
+              d.subject.fx = null;
+              d.subject.fy = null;
+            }))
+          .on('mouseover', showTooltip)
+          .on('mouseout', hideTooltip);
+
+        const labels = g.append('g')
+          .selectAll('text')
+          .data(nodes)
+          .enter()
+          .append('text')
+          .text(d => d.label)
+          .attr('font-size', '8px')
+          .attr('dx', 6)
+          .attr('dy', 2)
+          .attr('fill', '#666');
+
+        simulation.on('tick', () => {
+          link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+          node
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+          labels
+            .attr('x', d => d.x)
+            .attr('y', d => d.y);
+        });
+
+        function showTooltip(e, d) {
+          const tooltip = document.getElementById('tooltip');
+          tooltip.style.left = `${e.pageX + 8}px`;
+          tooltip.style.top = `${e.pageY + 8}px`;
+          tooltip.style.display = 'block';
+          tooltip.innerHTML = `<strong>${d.label}</strong><br>${Object.entries(d.traits || {}).map(([k, v]) => `${k}: ${v}`).join('<br>')}`;
+        }
+
+        function hideTooltip() {
+          document.getElementById('tooltip').style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Render eraro:', e);
+        document.getElementById(errorId).textContent = `Eraro: Malsukcesis bildigi grafon. (${e.message})`;
+      }
+    }
+
+    async function renderHeroGraph() {
+      const nflSource = `
+node:NFL_Speco | etikedo:"NFL Speco"
+pack:NFL_Leksikono | etikedo:"Leksikono"
+edge:NFL_Leksikono -> NFL_Speco | rilato:"parto_de_speco"
+      `;
+      const container = document.getElementById('graphHero');
+      try {
+        const graph = NFL.executeNFL(nflSource);
+        console.log('Hero Graph:', graph);
+        container.innerHTML = '';
+
+        const width = container.clientWidth || 500;
+        const height = 200;
+        const svg = d3.select(container)
+          .append('svg')
+          .attr('width', width)
+          .attr('height', height);
+        const g = svg.append('g');
+
+        const zoom = d3.zoom()
+          .scaleExtent([0.5, 2])
+          .on('zoom', e => g.attr('transform', e.transform));
+        svg.call(zoom);
+        svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8));
+
+        const nodes = graph.nodes ? Object.entries(graph.nodes).map(([id, node]) => ({
+          id,
+          label: node.label,
+          traits: node.traits
+        })) : [];
+        const links = graph.edges ? graph.edges.map(edge => ({
+          source: edge.source,
+          target: edge.target,
+          label: edge.relationship_type
+        })) : [];
+
+        if (!nodes.length) throw new Error('Neniuj nodoj');
+
+        const simulation = d3.forceSimulation(nodes)
+          .force('link', d3.forceLink(links).id(d => d.id).distance(60))
+          .force('charge', d3.forceManyBody().strength(-80))
+          .force('center', d3.forceCenter(0, 0))
+          .force('collision', d3.forceCollide().radius(15));
+
+        const link = g.append('g')
+          .selectAll('line')
+          .data(links)
+          .enter()
+          .append('line')
+          .attr('stroke', '#4a90e2')
+          .attr('stroke-opacity', 0.6)
+          .attr('stroke-width', 1);
+
+        const node = g.append('g')
+          .selectAll('circle')
+          .data(nodes)
+          .enter()
+          .append('circle')
+          .attr('r', 5)
+          .attr('fill', d => d.id.includes('NFL_Spec') ? '#4a90e2' : '#50c878')
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 0.5)
+          .call(d3.drag()
+            .on('start', d => {
+              if (!d.active) simulation.alphaTarget(0.3).restart();
+              d.subject.fx = d.subject.x;
+              d.subject.fy = d.subject.y;
+            })
+            .on('drag', d => {
+              d.subject.fx = d.x;
+              d.subject.fy = d.y;
+            })
+            .on('end', d => {
+              if (!d.active) simulation.alphaTarget(0);
+              d.subject.fx = null;
+              d.subject.fy = null;
+            }))
+          .on('mouseover', showTooltip)
+          .on('mouseout', hideTooltip);
+
+        const labels = g.append('g')
+          .selectAll('text')
+          .data(nodes)
+          .enter()
+          .append('text')
+          .text(d => d.label)
+          .attr('font-size', '8px')
+          .attr('dx', 6)
+          .attr('dy', 2)
+          .attr('fill', '#666');
+
+        simulation.on('tick', () => {
+          link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+          node
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+          labels
+            .attr('x', d => d.x)
+            .attr('y', d => d.y);
+        });
+      } catch (e) {
+        console.error('Hero render eraro:', e);
+        document.getElementById('heroGraphError').textContent = `Eraro: Malsukcesis bildigi grafon. (${e.message})`;
+      }
+    }
+
+    function setupSearch() {
+      const searchInput = document.getElementById('search');
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        ['graphHero', 'graphSpec', 'graphPlay', 'graphCrossWalk'].forEach(containerId => {
+          const svg = d3.select(`#${containerId} svg`);
+          const nodes = svg.selectAll('circle');
+          const links = svg.selectAll('line');
+          const labels = svg.selectAll('text');
+          nodes.each(function(d) {
+            const match = query ? d.label.toLowerCase().includes(query) : true;
+            d3.select(this)
+              .attr('r', match ? 8 : 5)
+              .attr('fill', match ? (d.traits?.domajno === 'Teknologio' || d.id.includes('NFL_Spec') ? '#4a90e2' : d.id.includes('Leksikono') ? '#50c878' : '#9b59b6') : '#bdc3c7');
+          });
+          links.each(function(d) {
+            const match = query ? (d.source.label.toLowerCase().includes(query) || d.target.label.toLowerCase().includes(query)) : true;
+            d3.select(this).attr('stroke', match ? '#4a90e2' : '#bdc3c7');
+          });
+          labels.each(function(d) {
+            const match = query ? d.label.toLowerCase().includes(query) : true;
+            d3.select(this).attr('fill', match ? '#666' : '#bdc3c7');
+          });
+        });
+      });
+    }
+
+    function setupFileInput() {
+      const fileInput = document.getElementById('fileInput');
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const format = document.getElementById('format').value;
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const content = event.target.result;
+            let nflContent;
+            if (format === 'nfl') {
+              nflContent = content;
+            } else {
+              nflContent = NFL.convertToNFL(content, format);
+            }
+            document.getElementById('playCode').value = nflContent;
+            render('play');
+          } catch (e) {
+            document.getElementById('playGraphError').textContent = `Eraro: Malsukcesis procesi dosieron. (${e.message})`;
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    async function downloadFile() {
+      const content = document.getElementById('playCode').value;
+      const format = document.getElementById('format').value;
+      try {
+        let output;
+        if (format === 'nfl') {
+          output = content;
+        } else {
+          output = NFL.convertFromNFL(content, format);
+        }
+        const blob = new Blob([output], { type: `text/${format === 'jsonld' ? 'json' : format}` });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `output.${format === 'jsonld' ? 'json' : format === 'rdf' ? 'ttl' : format}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        document.getElementById('playGraphError').textContent = `Eraro: Malsukcesis elŝuti dosieron. (${e.message})`;
+      }
+    }
+  </script>
 </body>
 </html>
