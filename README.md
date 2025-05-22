@@ -76,6 +76,17 @@ $ python -m cli.nfl_cli examples/simple.json \
     --export-ifc graph.ifc
 ```
 
+## NAICS Example and Converters
+
+The `examples/naics.json` file enumerates major two-digit NAICS sector codes in
+NFL form. Converter helpers in `nfl_converters.py` and the accompanying test
+suite under `tests/` demonstrate exporting this graph as JSON-LD, OWL, CityJSON
+and GeoJSON:
+
+```bash
+$ python -m tests.test_formats
+```
+
 ## Pilot Platform Mappings
 
 The repository also includes a more complete example under the `pilot.nfl` file.
