@@ -5,66 +5,67 @@ import argparse
 import json
 import os
 
+import jsonschema
+
 from . import nfl_to_openapi
+from . import nfl_to_semantics
 
 
 def load_json(path: str):
-    """Load a JSON file from *path*."""
-    with open(path, 'r', encoding='utf-8') as fh:
-        return json.load(fh)
+    """Load a JSON file from *path*.
+
+    Any :class:`OSError` encountered while opening the file or
+    :class:`json.JSONDecodeError` raised during parsing is re-raised with
+    additional context describing the path being processed.
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except OSError as exc:
+        raise IOError(f"Failed to read '{path}': {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise json.JSONDecodeError(
+            f"Invalid JSON in '{path}': {exc.msg}", exc.doc, exc.pos
+        ) from exc
 
 
 def validate_file(nfl_path: str, schema_path: str) -> bool:
     """Validate *nfl_path* against *schema_path*.
 
     Returns ``True`` if the file is valid, otherwise ``False``.
-    This implementation performs a minimal structural validation matching the
-    provided schema.
+    Validation uses ``jsonschema`` to ensure the file matches the schema.
     """
     try:
         nfl = load_json(nfl_path)
-    except Exception as exc:  # broad exception for CLI feedback
-        print(f"Failed to load '{nfl_path}': {exc}")
+    except IOError as exc:
+        print(exc)
+        return False
+    except json.JSONDecodeError as exc:
+        print(exc)
         return False
 
     try:
+
+        schema = load_json(schema_path)
+    except IOError as exc:
+        print(exc)
+        return False
+    except json.JSONDecodeError as exc:
+        print(exc)
+=======
         load_json(schema_path)
     except Exception as exc:
         print(f"Failed to load schema '{schema_path}': {exc}")
         return False
 
-    # minimal manual validation since jsonschema is unavailable
-    if not isinstance(nfl, dict):
-        print("NFL file must be a JSON object")
+    try:
+        jsonschema.validate(nfl, schema)
+    except jsonschema.ValidationError as exc:
+        print(f"Validation error: {exc.message}")
         return False
-
-    if "pack" not in nfl or not isinstance(nfl["pack"], str):
-        print("'pack' property missing or not a string")
+    except jsonschema.SchemaError as exc:
+        print(f"Invalid schema: {exc}")
         return False
-
-    if "nodes" in nfl:
-        if not isinstance(nfl["nodes"], list):
-            print("'nodes' must be a list")
-            return False
-        for node in nfl["nodes"]:
-            if not isinstance(node, dict):
-                print("each node must be an object")
-                return False
-            if "name" not in node or "type" not in node:
-                print("node entries require 'name' and 'type'")
-                return False
-
-    if "edges" in nfl:
-        if not isinstance(nfl["edges"], list):
-            print("'edges' must be a list")
-            return False
-        for edge in nfl["edges"]:
-            if not isinstance(edge, dict):
-                print("each edge must be an object")
-                return False
-            if "from" not in edge or "to" not in edge:
-                print("edge entries require 'from' and 'to'")
-                return False
 
     return True
 
@@ -87,6 +88,26 @@ def main(argv=None) -> int:
         metavar="FILE",
         help="Write an OpenAPI specification to FILE",
     )
+    parser.add_argument(
+        "--export-jsonld",
+        metavar="FILE",
+        help="Write a JSON-LD graph to FILE",
+    )
+    parser.add_argument(
+        "--export-owl",
+        metavar="FILE",
+        help="Write an OWL/Turtle representation to FILE",
+    )
+    parser.add_argument(
+        "--export-geojson",
+        metavar="FILE",
+        help="Write a GeoJSON file to FILE",
+    )
+    parser.add_argument(
+        "--export-ifc",
+        metavar="FILE",
+        help="Write an IFC text representation to FILE",
+    )
 
     args = parser.parse_args(argv)
 
@@ -98,6 +119,24 @@ def main(argv=None) -> int:
             with open(args.export_openapi, "w", encoding="utf-8") as fh:
                 json.dump(spec, fh, indent=2)
             print(f"OpenAPI written to {args.export_openapi}")
+        if any([args.export_jsonld, args.export_owl, args.export_geojson, args.export_ifc]):
+            converted = nfl_to_semantics.convert_file(args.file)
+            if args.export_jsonld:
+                with open(args.export_jsonld, "w", encoding="utf-8") as fh:
+                    json.dump(converted["jsonld"], fh, indent=2)
+                print(f"JSON-LD written to {args.export_jsonld}")
+            if args.export_owl:
+                with open(args.export_owl, "w", encoding="utf-8") as fh:
+                    fh.write(converted["owl"])
+                print(f"OWL written to {args.export_owl}")
+            if args.export_geojson:
+                with open(args.export_geojson, "w", encoding="utf-8") as fh:
+                    json.dump(converted["geojson"], fh, indent=2)
+                print(f"GeoJSON written to {args.export_geojson}")
+            if args.export_ifc:
+                with open(args.export_ifc, "w", encoding="utf-8") as fh:
+                    fh.write(converted["ifc"])
+                print(f"IFC written to {args.export_ifc}")
         return 0
     return 1
 

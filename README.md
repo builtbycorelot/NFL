@@ -35,19 +35,46 @@ NFL graphs are validated via JSON Schema and can compile to diverse runtimes (WA
 * `trait` – qualify behavior
 * `impl` – provide the implementation
 
+## Installation
+
+Install the CLI in editable mode:
+
+```bash
+$ pip install -e .
+```
+
+After installation, use the `nfl-cli` command to validate graphs:
+
+```bash
+$ nfl-cli examples/simple.json --export-openapi graph.openapi.json
+```
+
 This syntax keeps the language minimal while remaining expressive across domains.
 
 ## CLI Usage
 
 The repository provides a small command line tool for validating NFL graphs and
-exporting them as an OpenAPI specification:
+exporting them as an OpenAPI specification or other semantic formats:
 
 ```bash
-$ python -m cli.nfl_cli examples/simple.json --export-openapi graph.openapi.json
+$ nfl-cli examples/simple.json --export-openapi graph.openapi.json
 ```
 
 The generated `graph.openapi.json` contains a basic OpenAPI 3.0 document with
 `/nodes` and `/edges` endpoints that describe the graph structure.
+Additional examples can be found in `examples/open_permit.json`, `examples/open_tax.json`, and `examples/rel_n.json`.
+
+To export a JSON-LD representation or an OWL/Turtle file use the new
+`--export-jsonld` and `--export-owl` options. Additional helpers can produce
+GeoJSON and a very small IFC text export:
+
+```bash
+$ python -m cli.nfl_cli examples/simple.json \
+    --export-jsonld graph.jsonld \
+    --export-owl graph.ttl \
+    --export-geojson graph.geojson \
+    --export-ifc graph.ifc
+```
 
 ## Pilot Platform Mappings
 
@@ -59,7 +86,4 @@ concepts into a unified model with nodes such as `Party`, `Task`,
 demonstrating how the same semantics can synchronize data across Smartsheet,
 Intuit QuickBooks Online, and HubSpot.
 
-`pilot.nfl` uses the plain text syntax defined in `spec/grammar.ebnf`. Lines
-starting with `//` are comments. The CLI utilities operate on the JSON graph
-format in `schema/nfl.schema.json`, so to validate or export this example you
-must first translate it into that JSON structure.
+
