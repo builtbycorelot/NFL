@@ -3,6 +3,7 @@ import os
 import unittest
 
 from nfl_converters import to_json, to_jsonld, to_owl, to_cityjson, to_geojson
+from cli.nfl_to_semantics import convert_to_jsonld
 
 
 class TestConverters(unittest.TestCase):
@@ -22,6 +23,7 @@ class TestConverters(unittest.TestCase):
         self.assertIn("@graph", data)
         ids = [n.get("@id") for n in data["@graph"]]
         self.assertIn("11", ids)
+        self.assertEqual(data, convert_to_jsonld(self.nfl))
 
     def test_owl(self):
         ttl = to_owl(self.nfl)
@@ -31,6 +33,7 @@ class TestConverters(unittest.TestCase):
         cj = to_cityjson(self.nfl)
         self.assertIn("CityObjects", cj)
         self.assertIn("11", cj["CityObjects"])
+        self.assertEqual(cj["CityObjects"]["11"]["type"], "Sector")
 
     def test_geojson(self):
         gj = to_geojson(self.nfl)
