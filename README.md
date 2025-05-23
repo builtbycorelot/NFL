@@ -20,6 +20,7 @@ NodeForm Language is a minimal graph notation for declaring computation and poli
 | `impl` | provide the implementation |
 
 The grammar lives in [`index.nfl.json`](index.nfl.json) and can be explored using the [Interactive Graph Viewer](visualizer.html).
+The canonical JSON Schema for NFL is located at [`schema/nfl.schema.json`](schema/nfl.schema.json).
 
 ## Vision
 
