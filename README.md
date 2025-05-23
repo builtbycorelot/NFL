@@ -37,6 +37,15 @@ Pre-rendered outputs are located in the [`codecs/`](codecs/) folder. A lightweig
 
 Stub runtime packs are provided in [`packs/`](packs/) for future execution tests.
 
+## Development and Testing
+
+NFL requires **Python&nbsp;3.8 or higher**. Install the optional test dependencies and run the suite with:
+
+```bash
+pip install -e .[test]
+pytest
+```
+
 ## ContextMD
 
 See [`docs/context.md`](docs/context.md) for a high level summary and links to related documents.
