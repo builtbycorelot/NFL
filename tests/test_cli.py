@@ -27,3 +27,10 @@ def test_convert_file_simple():
         {"from": "x", "to": "y"}
     ]
 
+
+def test_validate_file_schema_error(tmp_path, capsys):
+    missing = tmp_path / "missing.json"
+    assert not validate_file("examples/simple.json", str(missing))
+    captured = capsys.readouterr()
+    assert f"Failed to read '{missing}'" in captured.out
+

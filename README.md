@@ -20,6 +20,7 @@ NodeForm Language is a minimal graph notation for declaring computation and poli
 | `impl` | provide the implementation |
 
 The grammar lives in [`index.nfl.json`](index.nfl.json) and can be explored using the [Interactive Graph Viewer](visualizer.html).
+The canonical JSON Schema for NFL is located at [`schema/nfl.schema.json`](schema/nfl.schema.json).
 
 ## Vision
 
@@ -36,6 +37,15 @@ Session: **NFL_Launch_Visual_IR_Stack_0522**
 Pre-rendered outputs are located in the [`codecs/`](codecs/) folder. A lightweight GitHub Pages site is hosted at [builtbycorelot.github.io/NFL](https://builtbycorelot.github.io/NFL) for quick access to the viewer.
 
 Stub runtime packs are provided in [`packs/`](packs/) for future execution tests.
+
+## Development and Testing
+
+NFL requires **Python&nbsp;3.8 or higher**. Install the optional test dependencies and run the suite with:
+
+```bash
+pip install -e .[test]
+pytest
+```
 
 ## ContextMD
 
