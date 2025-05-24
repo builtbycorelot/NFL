@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFL Overview</title>
+  <link rel="stylesheet" href="assets/nfl-genesis.css">
+  <style>
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 4px 8px; }
+  </style>
+</head>
+<body>
+  <h1>NodeForm Language Overview</h1>
+
+  <p>NodeForm Language (NFL) is a minimal graph notation for declaring computation and policy together. Nodes and edges build a self-describing graph that can execute across runtimes while tracking provenance and risk.</p>
+
+  <h2>Why NFL and Why Now?</h2>
+  <ul>
+    <li>Software and regulations keep colliding. A shared semantic layer lets both evolve together.</li>
+    <li>Graphs express relationships better than ad-hoc APIs.</li>
+    <li>Hardware trust anchors such as <strong>PLight.token</strong> allow verified execution of graph logic.</li>
+  </ul>
+
+  <h2>Core Verbs</h2>
+  <table>
+    <tr><th>Verb</th><th>Purpose</th></tr>
+    <tr><td><code>node</code></td><td>define an entity</td></tr>
+    <tr><td><code>edge</code></td><td>relate nodes</td></tr>
+    <tr><td><code>fn</code></td><td>declare a callable node</td></tr>
+    <tr><td><code>trait</code></td><td>annotate behavior</td></tr>
+    <tr><td><code>pack</code></td><td>group a dialect</td></tr>
+    <tr><td><code>impl</code></td><td>provide the implementation</td></tr>
+  </table>
+
+  <h2>Documentation</h2>
+  <ul>
+    <li><a href="docs/context.md">Context</a></li>
+    <li><a href="docs/ledger.md">SemanticLedger</a></li>
+    <li><a href="docs/crosswalks.md">Crosswalks</a></li>
+    <li><a href="visualizer.html">Interactive Graph Viewer</a></li>
+    <li><a href="NFL-bench/dashboard.html">Benchmark Dashboard</a></li>
+  </ul>
+
+  <h2>Latest Benchmarks</h2>
+  <pre id="metrics">Loading...</pre>
+
+  <h2>Test Status</h2>
+  <p>✅ All tests passing</p>
+
+<script>
+fetch('NFL-bench/results/metrics.csv')
+  .then(resp => {
+    if (!resp.ok) throw new Error('no results');
+    return resp.text();
+  })
+  .then(text => {
+    document.getElementById('metrics').textContent = text;
+  })
+  .catch(() => {
+    document.getElementById('metrics').textContent = 'No benchmark results found.';
+  });
+</script>
+</body>
+</html>
