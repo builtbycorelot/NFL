@@ -5,7 +5,10 @@ import argparse
 import json
 import os
 
-import jsonschema
+try:
+    import jsonschema
+except Exception:  # pragma: no cover - optional dependency
+    jsonschema = None
 
 from . import nfl_to_openapi
 from . import nfl_to_semantics
@@ -45,18 +48,19 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
         return False
 
     try:
-
         schema = load_json(schema_path)
     except IOError as exc:
         print(exc)
         return False
     except json.JSONDecodeError as exc:
         print(exc)
-=======
-        load_json(schema_path)
+        return False
     except Exception as exc:
         print(f"Failed to load schema '{schema_path}': {exc}")
         return False
+
+    if jsonschema is None:
+        return isinstance(nfl, dict) and "nodes" in nfl and "edges" in nfl
 
     try:
         jsonschema.validate(nfl, schema)
