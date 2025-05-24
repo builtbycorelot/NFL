@@ -17,20 +17,11 @@ def _validate_graph(nfl: Dict[str, Any]) -> None:
 def to_json(nfl: Dict[str, Any]) -> str:
     """Return the NFL graph as pretty JSON."""
     _validate_graph(nfl)
-    return json.dumps(nfl, indent=2, sort_keys=True)
-
-
-def to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a JSON-LD representation of *nfl*."""
-    _validate_graph(nfl)
     return convert_to_jsonld(nfl)
 
 
 def to_owl(nfl: Dict[str, Any]) -> str:
-    """Return a tiny OWL/Turtle representation of *nfl*."""
-    _validate_graph(nfl)
 
-    lines = [
         "@prefix nfl: <http://example.org/nfl#> .",
         "@prefix owl: <http://www.w3.org/2002/07/owl#> .",
         "",
@@ -56,24 +47,20 @@ def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
     """Return a simple CityJSON representation of *nfl*."""
     _validate_graph(nfl)
 
-    city = {
-        "type": "CityJSON",
-        "version": "1.0",
-        "CityObjects": {},
-        "vertices": [],
-    }
-
+    city_objects: Dict[str, Any] = {}
     for node in nfl.get("nodes", []):
-        name = node.get("name")
-        if not name:
-            continue
-        attrs = {k: v for k, v in node.items() if k not in {"name", "type"}}
-        city["CityObjects"][name] = {
-            "type": node.get("type", "Generic"),
-            "attributes": attrs,
-        }
 
-    return city
+        }
+        if "lat" in node and "lon" in node:
+            obj["geometry"] = [
+                {
+                    "type": "Point",
+                    "boundaries": [[node["lon"], node["lat"]]],
+                }
+            ]
+        city_objects[node.get("name")] = obj
+
+
 
 
 def to_geojson(nfl: Dict[str, Any]) -> Dict[str, Any]:
