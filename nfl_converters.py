@@ -17,6 +17,8 @@ def to_json(nfl: Dict[str, Any]) -> str:
 
 def to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
     """Return a JSON-LD representation of *nfl*."""
+    if not isinstance(nfl, dict) or not all(k in nfl for k in ["nodes", "edges"]):
+        raise ValueError("Input must be a valid NFL graph with 'nodes' and 'edges' keys")
     return convert_to_jsonld(nfl)
 
 
