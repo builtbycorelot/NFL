@@ -16,9 +16,21 @@ def parse_file(path: str) -> Dict[str, Any]:
     edges: List[Dict[str, Any]] = []
 
     with open(path, "r", encoding="utf-8") as fh:
+        node: Dict[str, Any] | None = None
         for raw in fh:
             line = raw.strip()
             if not line or line.startswith("//"):
+                continue
+
+            if node is not None:
+                # inside a node block
+                if line == "}" or line.endswith("}"):
+                    nodes.append(node)
+                    node = None
+                    continue
+                m_field = re.match(r"(\w+)\s*:\s*([\w<>]+)", line)
+                if m_field:
+                    node["fields"].append({"name": m_field.group(1), "type": m_field.group(2)})
                 continue
 
             if line.startswith("namespace"):
@@ -30,12 +42,12 @@ def parse_file(path: str) -> Dict[str, Any]:
             if line.startswith("node "):
                 m = re.match(r"node\s+(\w+)", line)
                 if m:
-                    # Initialize node with basic properties
                     node = {"name": m.group(1), "type": "record", "fields": []}
-                    nodes.append(node)
-                    # Here we would need additional logic to parse the node body
-                    # by reading subsequent lines until the node block ends
+                    if line.endswith("}"):
+                        nodes.append(node)
+                        node = None
                 continue
+
             if line.startswith("edge ") and "->" in line:
                 # A more robust regex that can handle both formats described in the docs
                 m = re.match(r"edge\s+(\w+)\s*(?::\s*)?([^-]*?)\s*->\s*([^{]*)", line)
@@ -53,6 +65,7 @@ def parse_file(path: str) -> Dict[str, Any]:
 
                 edges.append(edge)
                 continue
+
     return {"pack": pack, "nodes": nodes, "edges": edges}
 
 
