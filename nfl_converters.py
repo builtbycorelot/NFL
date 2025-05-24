@@ -24,56 +24,17 @@ def _validate_graph(nfl: Dict[str, Any]) -> None:
 def to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
     """Return a JSON-LD representation of *nfl*."""
     _validate_graph(nfl)
-
-    context = {
-        "name": "http://schema.org/name",
-        "type": "http://schema.org/additionalType",
-        "from": {"@id": "http://schema.org/from", "@type": "@id"},
-        "to": {"@id": "http://schema.org/to", "@type": "@id"},
-        "Node": "http://schema.org/Thing",
-        "Edge": "http://schema.org/ActionRelationship",
-    }
-
-    graph: List[Dict[str, Any]] = []
-
-    for node in nfl.get("nodes", []):
-        node_name = node.get("name")
-        if not node_name:
-            raise ValueError("Node missing required 'name' field")
-        graph.append(
-            {
-                "@id": node_name,
-                "@type": "Node",
-                "name": node_name,
-                "type": node.get("type", "Thing"),
-            }
-        )
-
-    for edge in nfl.get("edges", []):
-        graph.append({"@type": "Edge", "from": edge.get("from"), "to": edge.get("to")})
-
-    return {"@context": context, "@graph": graph}
-
-
-def to_owl(nfl: Dict[str, Any]) -> str:
-    """Return a very small OWL/Turtle representation of *nfl*."""
-    _validate_graph(nfl)
-
-=======
-def to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a JSON-LD representation of *nfl*."""
-    if not isinstance(nfl, dict) or not all(k in nfl for k in ["nodes", "edges"]):
-        raise ValueError("Input must be a valid NFL graph with 'nodes' and 'edges' keys")
     return convert_to_jsonld(nfl)
 
 
 def to_owl(nfl: Dict[str, Any]) -> str:
     """Return an OWL/Turtle representation of *nfl*."""
+    _validate_graph(nfl)
+
     lines: List[str] = [
         "@prefix nfl: <http://example.org/nfl#> .",
         "@prefix owl: <http://www.w3.org/2002/07/owl#> .",
         "",
-
         "nfl:Ontology a owl:Ontology .",
     ]
 
@@ -92,79 +53,6 @@ def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
     """Return a simple CityJSON representation of *nfl*."""
     _validate_graph(nfl)
 
-    city = {
-        "type": "CityJSON",
-        "version": "1.0",
-        "CityObjects": {},
-        "vertices": [],
-    }
-
-    for node in nfl.get("nodes", []):
-        node_name = node.get("name")
-        if not node_name:
-            raise ValueError("Node missing required 'name' field")
-        city["CityObjects"][node_name] = {
-            "type": node.get("type", "Generic"),
-            "attributes": {k: v for k, v in node.items() if k not in {"name", "type"}},
-        }
-
-    return city
-
-
-def to_geojson(nfl: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a GeoJSON FeatureCollection for *nfl*."""
-    _validate_graph(nfl)
-
-
-    ]
-    for node in nfl.get("nodes", []):
-        name = node.get('name')
-        node_type = node.get('type', 'UnknownType')
-        if name:
-            lines.append(f"nfl:{name} a nfl:{node_type} .")
-    for edge in nfl.get("edges", []):
-        from_node = edge.get('from')
-        to_node = edge.get('to')
-        if from_node and to_node:
-            lines.append(f"nfl:{from_node} nfl:relatedTo nfl:{to_node} .")
-    return "\n".join(lines)
-
-
-def to_geojson(nfl: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a GeoJSON ``FeatureCollection`` for the graph."""
-
-    features: List[Dict[str, Any]] = []
-    for node in nfl.get("nodes", []):
-        geometry = None
-        if "lat" in node and "lon" in node:
-            geometry = {
-                "type": "Point",
-                "coordinates": [node["lon"], node["lat"]],
-            }
-
-        props = {k: v for k, v in node.items() if k not in {"lat", "lon"}}
-        props.setdefault("id", node.get("name"))
-        features.append({"type": "Feature", "geometry": geometry, "properties": props})
-
-    return {"type": "FeatureCollection", "features": features}
-
-
-=======
-        features.append(
-            {
-                "type": "Feature",
-                "geometry": geometry,
-                "properties": {
-                    "id": node.get("name"),
-                    **{k: v for k, v in node.items() if k not in {"name", "lat", "lon"}},
-                },
-            }
-        )
-    return {"type": "FeatureCollection", "features": features}
-
-
-def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a simple CityJSON representation of *nfl*."""
     city_objects: Dict[str, Any] = {}
     for node in nfl.get("nodes", []):
         obj = {
@@ -181,6 +69,26 @@ def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
         city_objects[node.get("name")] = obj
 
     return {"type": "CityJSON", "version": "1.1", "CityObjects": city_objects}
+
+
+def to_geojson(nfl: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a GeoJSON ``FeatureCollection`` for the graph."""
+    _validate_graph(nfl)
+
+    features: List[Dict[str, Any]] = []
+    for node in nfl.get("nodes", []):
+        geometry = None
+        if "lat" in node and "lon" in node:
+            geometry = {
+                "type": "Point",
+                "coordinates": [node["lon"], node["lat"]],
+            }
+
+        props = {k: v for k, v in node.items() if k not in {"lat", "lon"}}
+        props.setdefault("id", node.get("name"))
+        features.append({"type": "Feature", "geometry": geometry, "properties": props})
+
+    return {"type": "FeatureCollection", "features": features}
 
 
 __all__ = [
