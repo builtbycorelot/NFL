@@ -84,7 +84,10 @@ def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
     }
 
     for node in nfl.get("nodes", []):
-        city["CityObjects"][node.get("name")] = {
+        node_name = node.get("name")
+        if not node_name:
+            raise ValueError("Node missing required 'name' field")
+        city["CityObjects"][node_name] = {
             "type": node.get("type", "Generic"),
             "attributes": {k: v for k, v in node.items() if k not in {"name", "type"}},
         }
