@@ -46,14 +46,8 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
 
     try:
         schema = load_json(schema_path)
-    except IOError as exc:
+    except (IOError, json.JSONDecodeError) as exc:
         print(exc)
-        return False
-    except json.JSONDecodeError as exc:
-        print(exc)
-        return False
-    except Exception as exc:
-        print(f"Failed to load schema '{schema_path}': {exc}")
         return False
 
     try:
