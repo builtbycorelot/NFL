@@ -35,12 +35,15 @@ def to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
     graph: List[Dict[str, Any]] = []
 
     for node in nfl.get("nodes", []):
+        node_name = node.get("name")
+        if not node_name:
+            raise ValueError("Node missing required 'name' field")
         graph.append(
             {
-                "@id": node.get("name"),
+                "@id": node_name,
                 "@type": "Node",
-                "name": node.get("name"),
-                "type": node.get("type"),
+                "name": node_name,
+                "type": node.get("type", "Thing"),
             }
         )
 
