@@ -1,0 +1,5 @@
+[
+  {"id": 1, "action": "create", "type": "node", "value": "A"},
+  {"id": 2, "action": "create", "type": "node", "value": "B"},
+  {"id": 3, "action": "edge", "from": "A", "to": "B"}
+]

@@ -44,3 +44,15 @@ See [`docs/context.md`](docs/context.md) for a high level summary and links to r
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Benchmark Harness
+
+A lightweight benchmark environment lives in [NFL-bench](NFL-bench/). Start the services and run the sample workload using:
+
+```bash
+cd NFL-bench
+docker-compose up -d
+./runner.sh
+```
+
+Metrics are written under `NFL-bench/results`. Open `NFL-bench/dashboard.html` in a browser to visualize the run.
