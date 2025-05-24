@@ -30,9 +30,15 @@ def to_owl(nfl: Dict[str, Any]) -> str:
         "",
     ]
     for node in nfl.get("nodes", []):
-        lines.append(f"nfl:{node.get('name')} a nfl:{node.get('type')} .")
+        name = node.get('name')
+        node_type = node.get('type', 'UnknownType')
+        if name:
+            lines.append(f"nfl:{name} a nfl:{node_type} .")
     for edge in nfl.get("edges", []):
-        lines.append(f"nfl:{edge.get('from')} nfl:relatedTo nfl:{edge.get('to')} .")
+        from_node = edge.get('from')
+        to_node = edge.get('to')
+        if from_node and to_node:
+            lines.append(f"nfl:{from_node} nfl:relatedTo nfl:{to_node} .")
     return "\n".join(lines)
 
 
