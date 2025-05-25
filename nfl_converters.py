@@ -7,18 +7,20 @@ from typing import Any, Dict, List
 
 from cli.nfl_to_semantics import convert_to_jsonld
 
+def to_json(nfl: Dict[str, Any]) -> str:
+    """Return the NFL graph as pretty JSON."""
+    _validate_graph(nfl)
+    return json.dumps(nfl, indent=2, sort_keys=True)
 
 def _validate_graph(nfl: Dict[str, Any]) -> None:
     """Raise :class:`ValueError` if *nfl* doesn't look like a graph."""
     if not isinstance(nfl, dict) or not all(k in nfl for k in ["nodes", "edges"]):
         raise ValueError("Input must be a valid NFL graph with 'nodes' and 'edges' keys")
 
-
 def to_json(nfl: Dict[str, Any]) -> str:
     """Return the NFL graph as pretty JSON."""
     _validate_graph(nfl)
     return convert_to_jsonld(nfl)
-
 
 def to_owl(nfl: Dict[str, Any]) -> str:
 
@@ -42,7 +44,6 @@ def to_owl(nfl: Dict[str, Any]) -> str:
 
     return "\n".join(lines)
 
-
 def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
     """Return a simple CityJSON representation of *nfl*."""
     _validate_graph(nfl)
@@ -59,9 +60,6 @@ def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
                 }
             ]
         city_objects[node.get("name")] = obj
-
-
-
 
 def to_geojson(nfl: Dict[str, Any]) -> Dict[str, Any]:
     """Return a GeoJSON ``FeatureCollection`` for the graph."""
