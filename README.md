@@ -1,6 +1,6 @@
 * Software and regulations keep colliding. A shared semantic layer lets both evolve together.
 * Graphs express relationships better than ad-hoc APIs.
-* Hardware trust anchors secure deployment.
+* Hardware trust anchors secure deployments.
 
 ## Core Verbs
 
@@ -11,10 +11,10 @@
 | `fn`   | declare a callable node |
 | `trait` | annotate behavior, store data, include - metaframework. 
 | `pack` | group a dialect |
-| `impl` | provide the implementation|
+| `impl` | provide the implementation| 
 
 The grammar lives in [`index.nfl.json`](index.nfl.json) and can be explored using the [Interactive Graph Viewer](visualizer.html).
-The authorative JSON Schema for NFL is located at [`schema/nfl.schema.json`](schema/nfl.schema.json).
+The authorative JSON Schema for NFL is located at [`schema/nfl.schema.json`](schema/nfl.schema.json). - Distiling RedNode & Redhat
 
 ## Vision
 
