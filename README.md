@@ -1,6 +1,7 @@
 * Software and regulations keep colliding. A shared semantic layer lets both evolve together.
 * Graphs express relationships better than ad-hoc APIs.
 * Hardware trust anchors secure deployments.
+* AEC Verification is required - Stardards Contributors are recognized
 
 ## Core Verbs
 
@@ -26,22 +27,18 @@ The authorative JSON Schema for NFL is located at [`schema/nfl.schema.json`](sch
 * [Graph IR Viewer](visualizer.html) – loads `index.nfl.json` automatically.
 * [Context](docs/context.md) – repository anchor and semantic index.
 
-Pre-rendered outputs are located in the [`codecs/`](codecs/) folder. A lightweight GitHub Pages site is hosted at [builtbycorelot.github.io/NFL](https://builtbycorelot.github.io/NFL) for quick access to the viewer.
+Pre-rendered outputs are located in the [`codecs/`](codecs/) folder. 
 
-Stub runtime packs:  [`packs/`](packs/) for future execution tests. Double Human Verification - What are their guiding pricipals?
+Stub runtime packs:  [`packs/`](packs/) for execution tests. Double Human Verification - What are their guiding pricipals?
+
+TODO: VERIFY PACK 1
 
 ## Development and Testing
-
-NFL requires **Python&nbsp;3.8 or higher**. Install the optional test dependencies and run the suite with:
-
-```bash
-pip install -e .[test]
-pytest
-```
+Run comprehensive tests
 
 ## ContextMD
 
-See [`docs/context.md`](docs/context.md) for a high level summary and links to related documents.
+See [`docs/context.md`](docs/context.md).
 
 ## License
 
