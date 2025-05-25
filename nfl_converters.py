@@ -10,8 +10,7 @@ from cli.nfl_to_semantics import convert_to_jsonld
 
 def to_json(nfl: Dict[str, Any]) -> str:
     """Return the NFL graph as pretty JSON."""
-    if not isinstance(nfl, dict) or not all(k in nfl for k in ["nodes", "edges"]):
-        raise ValueError("Input must be a valid NFL graph with 'nodes' and 'edges' keys")
+    _validate_graph(nfl)
     return json.dumps(nfl, indent=2, sort_keys=True)
 
 
@@ -41,10 +40,14 @@ def to_owl(nfl: Dict[str, Any]) -> str:
     for node in nfl.get("nodes", []):
         name = node.get("name")
         typ = node.get("type", "Node")
-        lines.append(f"nfl:{name} a nfl:{typ} .")
+        if name:
+            lines.append(f"nfl:{name} a nfl:{typ} .")
 
     for edge in nfl.get("edges", []):
-        lines.append(f"nfl:{edge.get('from')} nfl:connectedTo nfl:{edge.get('to')} .")
+        from_node = edge.get("from")
+        to_node = edge.get("to")
+        if from_node and to_node:
+            lines.append(f"nfl:{from_node} nfl:connectedTo nfl:{to_node} .")
 
     return "\n".join(lines)
 
