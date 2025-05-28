@@ -54,4 +54,4 @@ docker-compose up -d
 ./runner.sh
 ```
 
-Metrics are written under `NFL-bench/results`. Open `NFL-bench/dashboard.html` in a browser to visualize the run.
+Metrics are written under `NFL-bench/results`. Open `NFL-bench/dashboard.html` in a browser to visualize CPU and memory usage.
