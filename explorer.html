@@ -66,6 +66,9 @@
     }
 
     function render() {
+      // Stop any previous simulation to avoid accumulating listeners/loops
+      if (window._nflSimulation) window._nflSimulation.stop();
+
       const width = document.getElementById('graph').clientWidth;
       const height = document.getElementById('graph').clientHeight;
       const svg = d3.select('#graph').html('').append('svg')
@@ -122,7 +125,13 @@
         d.fx = d.x; d.fy = d.y;
       }
       function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
-      function dragended(event, d) { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+      function dragended(event, d) { 
+        if (!event.active) simulation.alphaTarget(0); 
+        d.fx = null; d.fy = null; 
+      }
+
+      // Remember this simulation so we can stop it next time
+      window._nflSimulation = simulation;
     }
 
     document.getElementById('addNodeBtn').onclick = () => {
