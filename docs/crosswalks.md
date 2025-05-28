@@ -12,4 +12,3 @@ Mappings to external vocabularies help NFL interoperate with existing standards.
 
 TODO: Add NFL Examples and how it defines itself
 
-See files under `codecs/` for examples produced from `index.nfl.json`.
