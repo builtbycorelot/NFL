@@ -26,6 +26,7 @@ This of this as distilling RedNode & Redhat Neo4J
 * [Launch Page](index.html) – repository overview and links
 * [Graph IR Viewer](visualizer.html) – loads `index.nfl.json` automatically.
 * [Context](docs/context.md) – repository anchor and semantic index.
+* [CodeRabbit Badge](docs/coderabbit_badge.md) – badge parameters for PR review counts.
 
 ## Development and Testing
 
