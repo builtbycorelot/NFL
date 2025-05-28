@@ -131,8 +131,14 @@
       const to = document.getElementById('edgeTo').value.trim();
       const type = document.getElementById('edgeType').value.trim();
       if (!from || !to) return;
+      if (!data.nodes.some(n => n.name === from) || !data.nodes.some(n => n.name === to)) {
+        alert('Both source and target nodes must exist.');
+        return;
+      }
       data.edges.push({ from, to, type });
       updateJson();
+      render();
+    };
       render();
     };
 
