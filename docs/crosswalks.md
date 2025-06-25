@@ -10,5 +10,41 @@ Mappings to external vocabularies help NFL interoperate with existing standards.
 - **schema.org** – web entities
 - **node**
 
-TODO: Add NFL Examples and how it defines itself
+Example NFL graph in JSON:
+
+```json
+{
+  "pack": "demo",
+  "nodes": [{"name": "A", "type": "Thing"}],
+  "edges": []
+}
+```
+
+### JSON-LD
+
+```json
+{
+  "@context": "http://schema.org",
+  "@graph": [{"@id": "A", "@type": "Thing", "name": "A"}]
+}
+```
+
+### OWL
+
+```
+:A a :Thing .
+```
+
+### CityJSON
+
+```json
+{
+  "type": "CityJSON",
+  "version": "1.1",
+  "CityObjects": {"A": {"type": "Thing", "attributes": {}}}
+}
+```
+
+NFL uses this graph format to describe itself in `nfl.schema.json`, which
+specifies the required fields for nodes and edges.
 

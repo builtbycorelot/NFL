@@ -42,6 +42,10 @@ def to_owl(nfl: Dict[str, Any]) -> str:
         typ = node.get("type", "Node")
         if name:
             lines.append(f"nfl:{name} a nfl:{typ} .")
+            if "state" in node:
+                lines.append(
+                    f"nfl:{name} nfl:hasState '{json.dumps(node['state'])}' ."
+                )
 
     for edge in nfl.get("edges", []):
         from_node = edge.get("from")

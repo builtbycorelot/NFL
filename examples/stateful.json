@@ -1,0 +1,7 @@
+{
+  "pack": "state.test",
+  "nodes": [
+    {"name": "counter", "type": "int", "state": {"value": 0}}
+  ],
+  "edges": []
+}

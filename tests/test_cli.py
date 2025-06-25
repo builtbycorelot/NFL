@@ -1,4 +1,5 @@
 import json
+import pytest
 from cli.nfl_cli import validate_file
 from cli.nfl_to_openapi import convert_file
 
@@ -12,7 +13,8 @@ def test_validate_file_valid():
 def test_validate_file_invalid(tmp_path):
     invalid = tmp_path / "invalid.json"
     invalid.write_text("{}", encoding="utf-8")
-    assert not validate_file(str(invalid), SCHEMA_PATH)
+    with pytest.raises(Exception):
+        validate_file(str(invalid), SCHEMA_PATH)
 
 
 def test_convert_file_simple():
@@ -28,9 +30,24 @@ def test_convert_file_simple():
     ]
 
 
-def test_validate_file_schema_error(tmp_path, capsys):
+def test_validate_file_schema_error(tmp_path):
     missing = tmp_path / "missing.json"
-    assert not validate_file("examples/simple.json", str(missing))
-    captured = capsys.readouterr()
-    assert f"Failed to read '{missing}'" in captured.out
+    with pytest.raises(IOError):
+        validate_file("examples/simple.json", str(missing))
+
+
+def test_validate_stateful_example():
+    assert validate_file("examples/stateful.json", SCHEMA_PATH)
+
+
+def test_validate_unknown_edge(tmp_path):
+    graph = {
+        "pack": "bad",
+        "nodes": [{"name": "a", "type": "X"}],
+        "edges": [{"from": "a", "to": "b"}],
+    }
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(graph), encoding="utf-8")
+    with pytest.raises(ValueError):
+        validate_file(str(path), SCHEMA_PATH)
 

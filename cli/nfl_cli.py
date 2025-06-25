@@ -35,39 +35,23 @@ def load_json(path: str):
 def validate_file(nfl_path: str, schema_path: str) -> bool:
     """Validate *nfl_path* against *schema_path*.
 
-    Returns ``True`` if the file is valid, otherwise ``False``.
-    Validation uses ``jsonschema`` to ensure the file matches the schema.
+    Raises appropriate exceptions on failure and returns ``True`` when the file
+    is valid. Validation uses ``jsonschema`` and also ensures edges reference
+    existing nodes.
     """
-    try:
-        nfl = load_json(nfl_path)
-    except IOError as exc:
-        print(exc)
-        return False
-    except json.JSONDecodeError as exc:
-        print(exc)
-        return False
-
-    try:
-        schema = load_json(schema_path)
-    except (IOError, json.JSONDecodeError) as exc:
-        print(exc)
-        return False
-    except Exception as exc:
-        print(f"Failed to load schema '{schema_path}': {exc}")
-
-        return False
+    nfl = load_json(nfl_path)
+    schema = load_json(schema_path)
 
     if jsonschema is None:
-        return isinstance(nfl, dict) and "nodes" in nfl and "edges" in nfl
-
-    try:
+        if not (isinstance(nfl, dict) and "nodes" in nfl and "edges" in nfl):
+            raise ValueError("Input is not a valid NFL graph")
+    else:
         jsonschema.validate(nfl, schema)
-    except jsonschema.ValidationError as exc:
-        print(f"Validation error: {exc.message}")
-        return False
-    except jsonschema.SchemaError as exc:
-        print(f"Invalid schema: {exc}")
-        return False
+
+    node_names = {n.get("name") for n in nfl.get("nodes", [])}
+    for edge in nfl.get("edges", []):
+        if edge.get("from") not in node_names or edge.get("to") not in node_names:
+            raise ValueError(f"Edge references undefined nodes: {edge}")
 
     return True
 
@@ -113,34 +97,38 @@ def main(argv=None) -> int:
 
     args = parser.parse_args(argv)
 
-    valid = validate_file(args.file, args.schema)
-    if valid:
-        print(f"{args.file} is valid.")
-        if args.export_openapi:
-            spec = nfl_to_openapi.convert_file(args.file)
-            with open(args.export_openapi, "w", encoding="utf-8") as fh:
-                json.dump(spec, fh, indent=2)
-            print(f"OpenAPI written to {args.export_openapi}")
-        if any([args.export_jsonld, args.export_owl, args.export_geojson, args.export_ifc]):
-            converted = nfl_to_semantics.convert_file(args.file)
-            if args.export_jsonld:
-                with open(args.export_jsonld, "w", encoding="utf-8") as fh:
-                    json.dump(converted["jsonld"], fh, indent=2)
-                print(f"JSON-LD written to {args.export_jsonld}")
-            if args.export_owl:
-                with open(args.export_owl, "w", encoding="utf-8") as fh:
-                    fh.write(converted["owl"])
-                print(f"OWL written to {args.export_owl}")
-            if args.export_geojson:
-                with open(args.export_geojson, "w", encoding="utf-8") as fh:
-                    json.dump(converted["geojson"], fh, indent=2)
-                print(f"GeoJSON written to {args.export_geojson}")
-            if args.export_ifc:
-                with open(args.export_ifc, "w", encoding="utf-8") as fh:
-                    fh.write(converted["ifc"])
-                print(f"IFC written to {args.export_ifc}")
-        return 0
-    return 1
+    try:
+        validate_file(args.file, args.schema)
+    except Exception as exc:
+        print(exc)
+        return 1
+
+    print(f"{args.file} is valid.")
+    if args.export_openapi:
+        spec = nfl_to_openapi.convert_file(args.file)
+        with open(args.export_openapi, "w", encoding="utf-8") as fh:
+            json.dump(spec, fh, indent=2)
+        print(f"OpenAPI written to {args.export_openapi}")
+
+    if any([args.export_jsonld, args.export_owl, args.export_geojson, args.export_ifc]):
+        converted = nfl_to_semantics.convert_file(args.file)
+        if args.export_jsonld:
+            with open(args.export_jsonld, "w", encoding="utf-8") as fh:
+                json.dump(converted["jsonld"], fh, indent=2)
+            print(f"JSON-LD written to {args.export_jsonld}")
+        if args.export_owl:
+            with open(args.export_owl, "w", encoding="utf-8") as fh:
+                fh.write(converted["owl"])
+            print(f"OWL written to {args.export_owl}")
+        if args.export_geojson:
+            with open(args.export_geojson, "w", encoding="utf-8") as fh:
+                json.dump(converted["geojson"], fh, indent=2)
+            print(f"GeoJSON written to {args.export_geojson}")
+        if args.export_ifc:
+            with open(args.export_ifc, "w", encoding="utf-8") as fh:
+                fh.write(converted["ifc"])
+            print(f"IFC written to {args.export_ifc}")
+    return 0
 
 
 if __name__ == "__main__":

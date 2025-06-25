@@ -55,7 +55,11 @@ export function convertFromNFL(content, format) {
     case 'jsonld': {
       const items = [];
       for (const [id, n] of Object.entries(graph.nodes)) {
-        items.push({ '@id': id, '@type': 'Thing', name: n.label, ...n.traits });
+        const obj = { '@id': id, '@type': 'Thing', name: n.label, ...n.traits };
+        if (n.state !== undefined) {
+          obj.state = n.state;
+        }
+        items.push(obj);
       }
       for (const e of graph.edges) {
         items.push({ '@type': 'Relationship', from: e.source, to: e.target, relationship: e.relationship_type });
@@ -76,6 +80,9 @@ export function convertFromNFL(content, format) {
         for (const [k, v] of Object.entries(n.traits)) {
           out += `\n  ${k}: "${v}"`;
         }
+        if (n.state !== undefined) {
+          out += `\n  state: ${JSON.stringify(n.state)}`;
+        }
         out += `\n`;
       }
       return out;
@@ -83,7 +90,11 @@ export function convertFromNFL(content, format) {
     case 'geojson': {
       const features = [];
       for (const [id, n] of Object.entries(graph.nodes)) {
-        features.push({ type: 'Feature', properties: { id, label: n.label, ...n.traits }, geometry: null });
+        const props = { id, label: n.label, ...n.traits };
+        if (n.state !== undefined) {
+          props.state = n.state;
+        }
+        features.push({ type: 'Feature', properties: props, geometry: null });
       }
       return JSON.stringify({ type: 'FeatureCollection', features }, null, 2);
     }
