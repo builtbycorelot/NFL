@@ -20,12 +20,15 @@ def convert_to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
     graph: List[Dict[str, Any]] = []
 
     for node in nfl.get("nodes", []):
-        graph.append({
+        entry = {
             "@id": node.get("name"),
             "@type": "Node",
             "name": node.get("name"),
             "type": node.get("type"),
-        })
+        }
+        if "state" in node:
+            entry["state"] = node["state"]
+        graph.append(entry)
 
     for edge in nfl.get("edges", []):
         graph.append({
@@ -50,7 +53,12 @@ def convert_to_owl(nfl: Dict[str, Any]) -> str:
 
     for node in nfl.get("nodes", []):
         lines.append(f":{node.get('name')} a owl:NamedIndividual ;")
-        lines.append(f"    :type \"{node.get('type')}\" .")
+        type_line = f"    :type \"{node.get('type')}\""
+        if "state" in node:
+            lines.append(type_line + " ;")
+            lines.append(f"    :state '{json.dumps(node['state'])}' .")
+        else:
+            lines.append(type_line + " .")
 
     for edge in nfl.get("edges", []):
         lines.append(f":{edge.get('from')} :connectedTo :{edge.get('to')} .")

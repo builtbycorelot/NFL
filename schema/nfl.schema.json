@@ -11,6 +11,7 @@
         "properties": {
           "name": { "type": "string" },
           "type": { "type": "string" },
+          "state": { "type": "object" },
           "trait": {
             "type": "array",
             "items": { "type": "string" }
