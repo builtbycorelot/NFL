@@ -1,0 +1,10 @@
+{
+  "pack": "open.tax",
+  "nodes": [
+    {"name": "parcel", "type": "Property"},
+    {"name": "tax_bill", "type": "TaxBill"}
+  ],
+  "edges": [
+    {"from": "parcel", "to": "tax_bill"}
+  ]
+}

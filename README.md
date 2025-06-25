@@ -41,4 +41,13 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Benchmark Harness
 
-In Deepnote
+
+## Docker Compose
+
+To launch the NFL application together with Neo4j, PostgreSQL and an Apache server run:
+
+```bash
+docker-compose up
+```
+
+This builds the project image and starts all services for a local deployment.
