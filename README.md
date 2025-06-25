@@ -15,7 +15,7 @@
 | `impl` | provide the implementation| 
 
 
-This of this as distilling RedNode & Redhat Neo4J
+Think of this as distilling ideas from RedNode and Neo4j into a tiny set of verbs.
 
 ## Vision
 
@@ -31,9 +31,9 @@ This of this as distilling RedNode & Redhat Neo4J
 ## Development and Testing
 
 
-## ContextMD
+## Context
 
-TODO:Write Context MD
+See [docs/context.md](docs/context.md) for a short explanation of how the six verbs fit together and how to read NFL graphs.
 
 ## License
 
@@ -51,3 +51,28 @@ docker-compose up
 ```
 
 This builds the project image and starts all services for a local deployment.
+
+## Quickstart
+
+Install the package in editable mode and run the CLI:
+
+```bash
+pip install -e .
+nfl-cli validate examples/simple.json
+```
+
+Open a browser at `http://localhost` after running `docker-compose up` to view the HTML pages served by Apache. Neo4j is available on port `7474` and PostgreSQL on `5432`.
+
+## Differentiation
+
+| Feature | NFL | RedNode | Neo4j |
+|---------|-----|---------|-------|
+| Minimal language | ✅ | ❌ | ❌ |
+| Built-in provenance | ✅ | ❌ | ❌ |
+| Hardware trust anchors | ✅ | ❌ | ❌ |
+
+## Example Use Cases
+
+1. **Supply chain tracking** – model suppliers and shipments to trace provenance.
+2. **AI knowledge graph** – capture domain knowledge and function calls in a single graph.
+3. **Regulatory compliance** – express policy as graph traits alongside code.

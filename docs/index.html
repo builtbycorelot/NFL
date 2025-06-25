@@ -35,7 +35,7 @@
     });
 
     document.getElementById('loadExample').addEventListener('click', () => {
-      fetch('simple.json').then(r => r.json()).then(renderGraph);
+      fetch('../examples/simple.json').then(r => r.json()).then(renderGraph);
     });
 
     function renderGraph(nfl) {

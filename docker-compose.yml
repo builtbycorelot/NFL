@@ -35,5 +35,6 @@ services:
       - ./overview.html:/usr/local/apache2/htdocs/overview.html:ro
       - ./visualizer.html:/usr/local/apache2/htdocs/visualizer.html:ro
       - ./explorer.html:/usr/local/apache2/htdocs/explorer.html:ro
+      - ./assets:/usr/local/apache2/htdocs/assets:ro
     ports:
       - "80:80"

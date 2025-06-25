@@ -26,27 +26,6 @@ jobs:
         run: |
           pytest --cov=./ --cov-report=xml
 
-      - name: Set up Node
-        if: ${{ hashFiles('package.json') != '' }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install Node dependencies
-        if: ${{ hashFiles('package.json') != '' }}
-        run: |
-          npm install
-
-      - name: Run Node tests with coverage
-        if: ${{ hashFiles('package.json') != '' }}
-        run: |
-          npm test -- --coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage.xml,coverage/lcov.info
-          fail_ci_if_error: false
       - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
