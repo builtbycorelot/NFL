@@ -6,6 +6,7 @@ class ValidationResult:
     valid: bool
     errors: List[str]
 
+
 class NGLValidator:
     def validate(self, nodes: List[Dict[str, Any]]) -> ValidationResult:
         errors = []
@@ -16,5 +17,6 @@ class NGLValidator:
                 errors.append("missing id")
             elif node_id in ids:
                 errors.append(f"duplicate id: {node_id}")
-            ids.add(node_id)
+            else:
+                ids.add(node_id)
         return ValidationResult(not errors, errors)
