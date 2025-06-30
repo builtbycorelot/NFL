@@ -52,6 +52,16 @@ docker-compose up
 
 This builds the project image and starts all services for a local deployment.
 
+After the containers come up you can verify everything is running with:
+
+```bash
+docker-compose ps
+```
+
+You should see `nfl`, `neo4j`, `postgres` and `apache` listed as `Up`. Open
+`http://localhost` in your browser to confirm the HTML pages load. See
+[docs/docker.md](docs/docker.md) for more details.
+
 ## Quickstart
 
 Install the package in editable mode and run the CLI:
