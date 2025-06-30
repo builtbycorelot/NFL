@@ -25,7 +25,7 @@ class ValidateFileTests(unittest.TestCase):
             tmp.write("{}")
             tmp_path = tmp.name
         try:
-            with self.assertRaises(Exception):
+            with self.assertRaises(ValueError):  # or the specific exception type used
                 nfl_cli.validate_file(tmp_path, SCHEMA_PATH)
         finally:
             os.remove(tmp_path)
