@@ -13,7 +13,7 @@ def test_validate_file_valid():
 def test_validate_file_invalid(tmp_path):
     invalid = tmp_path / "invalid.json"
     invalid.write_text("{}", encoding="utf-8")
-    with pytest.raises(Exception):
+    with pytest.raises((ValueError, json.JSONDecodeError)):
         validate_file(str(invalid), SCHEMA_PATH)
 
 
