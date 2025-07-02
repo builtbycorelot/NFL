@@ -42,3 +42,29 @@ docker-compose down
 ```
 
 This stops and removes the containers.
+
+## Testing with Docker Desktop
+
+Windows users can run the stack inside Docker Desktop using a short PowerShell
+script. Save the following as `run-docker.ps1` in the repository root:
+
+```powershell
+docker-compose up --build *>&1 | Tee-Object -FilePath nfl_docker.log
+```
+
+Execute the script from a PowerShell prompt:
+
+```powershell
+./run-docker.ps1
+```
+
+The command streams container logs to the console while also saving them to
+`nfl_docker.log`. Look for messages such as `Bolt enabled on 0.0.0.0:7687` or
+`Usage: nfl-cli` to confirm each service starts correctly. Press `Ctrl+C` to
+stop and then run:
+
+```powershell
+docker-compose down
+```
+
+to remove the containers.
