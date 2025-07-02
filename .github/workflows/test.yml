@@ -1,0 +1,18 @@
+name: Compose Smoke Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: API healthcheck
+        run: |
+          docker compose up -d nfl
+          sleep 20
+          curl --fail http://localhost:8080/health

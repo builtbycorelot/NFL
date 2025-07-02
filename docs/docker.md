@@ -32,7 +32,7 @@ Check the status of the containers:
 docker-compose ps
 ```
 
-All services should be listed as `Up`. The API is reachable on port `10000`.
+All services should be listed as `Up`. The API is reachable on port `8080`.
 You can browse to [http://localhost](http://localhost) to see the web pages
 served by Apache. Neo4j is available on port `7474` and PostgreSQL on `5432`.
 
