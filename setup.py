@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="nfl",
-    version="0.1.0",
+    version="0.2.0",
     description="NodeForm Language tools",
     author="builtbycorelot",
     license="MIT",
@@ -10,6 +10,18 @@ setup(
     package_data={"schema": ["*.json"]},
     include_package_data=True,
     python_requires=">=3.8",
-    install_requires=["jsonschema"],
+    install_requires=[
+        "jsonschema",
+        "flask",
+        "flask-cors",
+        "neo4j-driver",
+        "gunicorn",
+        "python-dotenv",
+    ],
+    extras_require={
+        "test": [
+            "pytest",
+        ]
+    },
     entry_points={"console_scripts": ["nfl-cli=cli.nfl_cli:main"]},
 )
