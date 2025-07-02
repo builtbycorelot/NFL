@@ -46,7 +46,10 @@ def validate_file(nfl_path: str, schema_path: str) -> bool:
         if not (isinstance(nfl, dict) and "nodes" in nfl and "edges" in nfl):
             raise ValueError("Input is not a valid NFL graph")
     else:
-        jsonschema.validate(nfl, schema)
+        try:
+            jsonschema.validate(nfl, schema)
+        except jsonschema.exceptions.ValidationError as exc:
+            raise ValueError(exc.message) from exc
 
     node_names = {n.get("name") for n in nfl.get("nodes", [])}
     for edge in nfl.get("edges", []):
