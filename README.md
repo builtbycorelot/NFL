@@ -58,8 +58,9 @@ After the containers come up you can verify everything is running with:
 docker-compose ps
 ```
 
-You should see `nfl`, `neo4j`, `postgres` and `apache` listed as `Up`. Open
-`http://localhost` in your browser to confirm the HTML pages load. See
+You should see `nfl`, `api`, `neo4j`, `postgres` and `apache` listed as `Up`.
+The API server listens on `http://localhost:10000` for requests. Open
+`http://localhost` to confirm the HTML pages load. See
 [docs/docker.md](docs/docker.md) for more details.
 
 ## Quickstart

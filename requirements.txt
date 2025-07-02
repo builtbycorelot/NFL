@@ -1,2 +1,6 @@
 pytest
 jsonschema
+
+flask
+flask-cors
+neo4j
