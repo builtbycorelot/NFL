@@ -21,7 +21,8 @@ From the repository root run:
 docker-compose up
 ```
 
-This builds the `nfl` image and starts Neo4j, PostgreSQL and Apache. The first run may take a few minutes.
+This builds the `nfl` image and starts the API server along with Neo4j,
+PostgreSQL and Apache. The first run may take a few minutes.
 
 ## Verify
 
@@ -31,7 +32,9 @@ Check the status of the containers:
 docker-compose ps
 ```
 
-All services should be listed as `Up`. You can then browse to [http://localhost](http://localhost) to see the web pages served by Apache. Neo4j is available on port `7474` and PostgreSQL on `5432`.
+All services should be listed as `Up`. The API is reachable on port `10000`.
+You can browse to [http://localhost](http://localhost) to see the web pages
+served by Apache. Neo4j is available on port `7474` and PostgreSQL on `5432`.
 
 ## Shutdown
 
