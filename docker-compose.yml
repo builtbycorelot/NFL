@@ -2,7 +2,7 @@ version: '3.8'
 services:
   nfl:
     build: .
-    command: python -m cli.nfl_cli --help
+    command: gunicorn -b 0.0.0.0:${PORT:-8080} app:app
     volumes:
       - .:/opt/app
     depends_on:

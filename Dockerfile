@@ -1,8 +1,12 @@
-FROM registry.access.redhat.com/ubi9/python-39
+FROM python:3.11-slim
 WORKDIR /opt/app
-COPY requirements.txt ./
+
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Copy the rest of the source afterwards to keep the cache
-COPY . ./
-RUN pip install --no-cache-dir .
-CMD ["python", "-m", "cli.nfl_cli", "--help"]
+
+COPY . .
+
+EXPOSE 8080
+ENV PORT 8080
+
+CMD ["gunicorn", "-b", "0.0.0.0:${PORT:-8080}", "app:app"]

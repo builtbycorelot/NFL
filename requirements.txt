@@ -3,4 +3,6 @@ jsonschema
 
 flask
 flask-cors
-neo4j
+neo4j-driver
+gunicorn
+python-dotenv

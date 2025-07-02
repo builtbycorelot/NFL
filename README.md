@@ -59,9 +59,25 @@ docker-compose ps
 ```
 
 You should see `nfl`, `api`, `neo4j`, `postgres` and `apache` listed as `Up`.
-The API server listens on `http://localhost:10000` for requests. Open
-`http://localhost` to confirm the HTML pages load. See
-[docs/docker.md](docs/docker.md) for more details.
+The API server listens on `http://localhost:8080` for requests. Open
+`http://localhost` to confirm the HTML pages load. The HTML under `/docs`
+is served by the Apache container when running `docker-compose` locally.
+See [docs/docker.md](docs/docker.md) for more details.
+
+## Deploy on Render
+
+```
+Service type: Web Service
+Build Command: (leave blank)
+Start Command: (leave blank)
+Health Check path: /health
+Env vars: NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
+```
+
+Render maps `$PORT` to `8080` automatically. Create a second service if you
+need a private Neo4j container or point the variables at an AuraDB instance.
+The API routes live at the root domain on Render, so navigate to
+`https://your-app.onrender.com/health` instead of `/api/health`.
 
 ## Quickstart
 
