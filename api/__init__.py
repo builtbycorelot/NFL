@@ -16,8 +16,9 @@ app = FastAPI(title="NFL API")
 
 # … remaining code …
 # serve a simple landing page linking to documentation
+# serve a simple landing page linking to documentation
 @app.get("/")
-@app.get("/")
+def index() -> str:
 def index() -> str:
     """Landing page with helpful links."""
     return """
