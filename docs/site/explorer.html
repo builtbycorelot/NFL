@@ -50,7 +50,7 @@
 
     async function loadDefault() {
       try {
-        const resp = await fetch('index.nfl.json');
+        const resp = await fetch('../examples/index.nfl.json');
         data = await resp.json();
         updateJson();
         render();

@@ -18,7 +18,7 @@
   <button id="renderBtn">Render</button>
   <script>
     async function loadDefault() {
-      const resp = await fetch('index.nfl.json');
+      const resp = await fetch('../examples/index.nfl.json');
       const data = await resp.json();
       document.getElementById('json').value = JSON.stringify(data, null, 2);
       render(data);

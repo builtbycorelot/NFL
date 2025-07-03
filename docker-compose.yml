@@ -45,10 +45,12 @@ services:
   apache:
     image: httpd:alpine
     volumes:
-      - ./index.html:/usr/local/apache2/htdocs/index.html:ro
-      - ./overview.html:/usr/local/apache2/htdocs/overview.html:ro
-      - ./visualizer.html:/usr/local/apache2/htdocs/visualizer.html:ro
-      - ./explorer.html:/usr/local/apache2/htdocs/explorer.html:ro
+      - ./docs/site/index.html:/usr/local/apache2/htdocs/index.html:ro
+      - ./docs/site/overview.html:/usr/local/apache2/htdocs/overview.html:ro
+      - ./docs/site/visualizer.html:/usr/local/apache2/htdocs/visualizer.html:ro
+      - ./docs/site/explorer.html:/usr/local/apache2/htdocs/explorer.html:ro
+      - ./docs/site/nfl.js:/usr/local/apache2/htdocs/nfl.js:ro
       - ./assets:/usr/local/apache2/htdocs/assets:ro
+      - ./examples:/usr/local/apache2/htdocs/examples:ro
     ports:
       - "80:80"
