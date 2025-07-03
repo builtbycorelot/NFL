@@ -7,11 +7,13 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - optional dependency
     yaml = None
 
+
 @dataclass
 class ParseResult:
     valid: bool
     errors: List[str]
     nodes: Any = None
+
 
 class NGLParser:
     def parse(self, content: str, format: str = "json") -> ParseResult:

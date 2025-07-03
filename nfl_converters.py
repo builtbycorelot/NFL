@@ -17,7 +17,9 @@ def to_json(nfl: Dict[str, Any]) -> str:
 def _validate_graph(nfl: Dict[str, Any]) -> None:
     """Raise :class:`ValueError` if *nfl* doesn't look like a graph."""
     if not isinstance(nfl, dict) or not all(k in nfl for k in ["nodes", "edges"]):
-        raise ValueError("Input must be a valid NFL graph with 'nodes' and 'edges' keys")
+        raise ValueError(
+            "Input must be a valid NFL graph with 'nodes' and 'edges' keys"
+        )
 
 
 def to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
@@ -43,9 +45,7 @@ def to_owl(nfl: Dict[str, Any]) -> str:
         if name:
             lines.append(f"nfl:{name} a nfl:{typ} .")
             if "state" in node:
-                lines.append(
-                    f"nfl:{name} nfl:hasState '{json.dumps(node['state'])}' ."
-                )
+                lines.append(f"nfl:{name} nfl:hasState '{json.dumps(node['state'])}' .")
 
     for edge in nfl.get("edges", []):
         from_node = edge.get("from")
@@ -64,7 +64,9 @@ def to_cityjson(nfl: Dict[str, Any]) -> Dict[str, Any]:
     for node in nfl.get("nodes", []):
         obj = {
             "type": node.get("type", "Unknown"),
-            "attributes": {k: v for k, v in node.items() if k not in {"name", "type", "lat", "lon"}},
+            "attributes": {
+                k: v for k, v in node.items() if k not in {"name", "type", "lat", "lon"}
+            },
         }
         if "lat" in node and "lon" in node:
             obj["geometry"] = [

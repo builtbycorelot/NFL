@@ -110,7 +110,8 @@ Install the package in editable mode and run the CLI:
 ```bash
 pip install -e .
 nfl-cli validate examples/simple.json
-nfl-cli examples/simple.json --export-openapi openapi.json
+nfl-cli exec --file examples/simple.json start
+nfl-cli benchmark --scale small
 ```
 
 Open `openapi.json` in [Swagger UI](https://petstore.swagger.io/) for interactive API docs.
