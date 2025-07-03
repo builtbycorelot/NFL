@@ -8,6 +8,7 @@ packages = {
     "psycopg2": "offline_stubs.psycopg2",
     "psycopg2.extras": "offline_stubs.psycopg2.extras",
     "neo4j": "offline_stubs.neo4j",
+    "fastapi": "fastapi_stubs",
 }
 
 for pkg, stub in packages.items():
@@ -15,3 +16,14 @@ for pkg, stub in packages.items():
         importlib.import_module(pkg)
     except Exception:
         sys.modules[pkg] = importlib.import_module(stub)
+
+# If FastAPI is installed but the httpx dependency is missing,
+# fall back to the local stubs so the tests can run without httpx.
+try:
+    importlib.import_module("fastapi")
+    importlib.import_module("httpx")
+except Exception:
+    sys.modules["fastapi"] = importlib.import_module("fastapi_stubs")
+    sys.modules["fastapi.testclient"] = importlib.import_module(
+        "fastapi_stubs.testclient"
+    )
