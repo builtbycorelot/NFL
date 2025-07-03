@@ -11,11 +11,17 @@ domain instead, so `/health` is reachable at `https://your-app.onrender.com/heal
 
 ## Endpoints
 
-- `GET /health` – simple health check returning service status.
-- `POST /api/cypher` – execute Cypher queries against Neo4j.
-- `POST /api/sql` – run read-only SQL against PostgreSQL.
-- `POST /api/import` – import NFL JSON data into both databases.
-- `GET /api/examples` – sample requests for each API.
+The table below lists all public routes exposed by the API.
+
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| `GET`  | `/health` | Basic service heartbeat |
+| `GET`  | `/db/health` | Connectivity check for Neo4j and PostgreSQL |
+| `GET`  | `/info` | Build metadata and start time |
+| `POST` | `/api/cypher` | Execute Cypher queries against Neo4j |
+| `POST` | `/api/sql` | Run read-only SQL against PostgreSQL |
+| `POST` | `/api/import` | Import a NodeForm JSON document into both databases |
+| `GET`  | `/api/examples` | Example queries for reference |
 
 All endpoints accept and return JSON. Environment variables control database
 locations and credentials when running inside Docker.
@@ -28,26 +34,64 @@ Verify the server is reachable:
 curl http://localhost:8080/health
 ```
 
-The command should return `{"status":"healthy","service":"NFL Query API"}`.
+The command should return `{"status":"healthy","service":"NodeForm Query API"}`.
 
 ### Add a Node
 
-Use the Cypher endpoint to create a team node in Neo4j:
+Use the Cypher endpoint to create an entity node in Neo4j:
 
 ```bash
 curl -X POST http://localhost:8080/api/cypher \
   -H 'Content-Type: application/json' \
-  -d '{"query":"CREATE (:Team {id: $id, name: $name})","parameters":{"id":"TB","name":"Tampa Bay"}}'
+  -d '{"query":"CREATE (:Entity {id: $id, name: $name})","parameters":{"id":"E1","name":"Example"}}'
 ```
 
 ### Add a Relationship
 
-Create a relationship between teams:
+Create a relationship between entities:
 
 ```bash
 curl -X POST http://localhost:8080/api/cypher \
   -H 'Content-Type: application/json' \
-  -d '{"query":"MATCH (a:Team {id:$a}),(b:Team {id:$b}) CREATE (a)-[:RIVAL]->(b)","parameters":{"a":"TB","b":"NO"}}'
+  -d '{"query":"MATCH (a:Entity {id:$a}),(b:Entity {id:$b}) CREATE (a)-[:RELATED_TO]->(b)","parameters":{"a":"E1","b":"E2"}}'
 ```
 
 These commands assume `NEO4J_URI` points at a running Neo4j instance.
+
+### Check Database Connectivity
+
+```bash
+curl http://localhost:8080/db/health
+```
+
+Example response:
+
+```json
+{
+  "neo4j": "ok",
+  "postgres": "ok",
+  "latency_ms": {"neo4j": 0.5, "postgres": 0.2}
+}
+```
+
+### Retrieve Build Info
+
+```bash
+curl http://localhost:8080/info
+```
+
+### Run a SQL Query
+
+```bash
+curl -X POST http://localhost:8080/api/sql \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"SELECT * FROM entities","parameters":[]}'
+```
+
+### Import Data
+
+```bash
+curl -X POST http://localhost:8080/api/import \
+  -H 'Content-Type: application/json' \
+  -d @examples/simple.json
+```
