@@ -1,66 +1,62 @@
-# NFL Public API – Operational Spec (v0.2)
+# NFL Public API – Operational Spec (v0.3)
 
-This document mirrors the operational reference used to run and test the HTTP API.
-It outlines the quick start steps, runtime configuration, API surface and test
-matrix.
+This document outlines how to run the NFL stack with Neo4j, PostgreSQL and
+the browser based visualizers.
 
 ## Quick-Start
 
+Use Docker Compose to start all services:
+
 ```bash
-# build & run API on :8080
-$ docker build -t nfl-api .
-$ docker run -it --rm -p 8080:8080 \
-      -e PORT=8080 \
-      -e NEO4J_URI=bolt://host.docker.internal:7687 \
-      nfl-api
+docker-compose up
 ```
+
+This brings up the API server (`nfl-server`), PostgreSQL, Neo4j and a Jupyter
+`visualizer` container. The API listens on `:8000` and the Neo4j browser is
+accessible on `:7474`.
 
 Smoke test:
 
 ```bash
-curl http://localhost:8080/health  # -> {"status":"ok"}
+curl http://localhost:8000/health  # -> {"status":"ok"}
 ```
 
 ### Seed Data
 
-Run the Cypher statements in `schema/neo4j_schema.cypher` to create
-indexes in Neo4j. The example file `examples/groups.json` can then be
-imported via `POST /api/import` to populate sample groups for testing.
+Run the Cypher statements in `schema/neo4j_schema.cypher` to create indexes in
+Neo4j. Sample graphs in `examples/` can be imported via `POST /import`.
 
 ## Runtime Configuration
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `PORT` | `8080` | Required on Render. TCP port the API binds. |
-| `WORKERS` | `2` | Gunicorn worker count. |
-| `LOG_LEVEL` | `info` | debug/info/warning/error |
-| `NEO4J_URI` | *(empty – Neo4j disabled)* | Bolt URI; if unset, Neo4j routes are disabled. |
-| `POSTGRES_URI` | `dbname=nfl user=nfl password=nfl host=localhost` | Connection string for PostgreSQL. |
+| `PORT` | `8000` | API port |
+| `NEO4J_URI` | `bolt://neo4j:7687` | Neo4j connection |
+| `POSTGRES_URI` | `dbname=nfldb user=nfl password=secret host=postgres` | PostgreSQL connection |
 
-## API Surface
+## REST Endpoints
 
 - `GET /health`
-- `GET /db/health`
-- `GET /info`
 - `POST /import`
-- `GET /export/{format}`
-- `POST /query/cypher`
-- `POST /query/sql`
+- `GET /export/jsonld`
+- `GET /export/owl`
+- `GET /export/geojson`
 
-All responses return `{ "ok": true, "data": …, "duration_ms": 42 }` when successful.
+Use these in the notebooks inside the `visualizer` service to feed the
+`schema_org_visualizer` or `home_visualizer` packs.
 
-## Tests & Coverage
+## Exploring the Graph
 
-Install dependencies with test extras and run the suite with:
+Open [http://localhost:7474](http://localhost:7474) to access the Neo4j browser.
+The default credentials are `neo4j/secret`.
+
+## Launch Visualizers
+
+Attach to the `visualizer` service and start Jupyter:
 
 ```bash
-pip install -e .[test]
-pytest -q
+docker-compose exec visualizer start-notebook.sh --NotebookApp.token=''
 ```
 
-Neo4j tests automatically skip if `NEO4J_URI` is unset. Coverage results are
-published via Codecov.
-
-## Changelog
-
-*0.2 – Fix `${PORT}` bug; add DB health endpoint; full docs & badges.*
+Open the printed URL in your browser to run the example notebooks shipped in the
+`packs/` directory.

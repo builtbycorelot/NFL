@@ -9,6 +9,15 @@
     "/edges": {
       "get": {}
     },
+    "/export/jsonld": {
+      "get": {}
+    },
+    "/export/owl": {
+      "get": {}
+    },
+    "/export/geojson": {
+      "get": {}
+    },
     "/import": {
       "post": {}
     }

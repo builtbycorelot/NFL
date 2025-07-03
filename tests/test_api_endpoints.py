@@ -34,3 +34,19 @@ def test_edges_listing():
     edges = resp.json()
     assert edges
     assert edges[0]["from"] == "a"
+
+
+def test_export_formats():
+    data = {"pack": "demo", "nodes": [{"name": "n", "type": "X"}], "edges": []}
+    client.post("/import", json=data)
+    resp = client.get("/export/jsonld")
+    assert resp.status_code == 200
+    assert resp.json()["pack"] == "demo"
+
+    resp = client.get("/export/owl")
+    assert resp.status_code == 200
+    assert "ttl" in resp.json()
+
+    resp = client.get("/export/geojson")
+    assert resp.status_code == 200
+    assert resp.json()["type"] == "FeatureCollection"
