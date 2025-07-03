@@ -1,23 +1,15 @@
-![build](https://github.com/builtbycorelot/NFL/actions/workflows/ci.yml/badge.svg)
-![coverage](https://codecov.io/gh/builtbycorelot/NFL/branch/main/graph/badge.svg)
-![compose](https://github.com/builtbycorelot/NFL/actions/workflows/test.yml/badge.svg)
+# NFL
 
-* Node Form Language is a metaframework to organize knowledge and action.
-* Graphs express relationships
-* Hardware trust anchors secure deployments.
-* Minimalist lexicon for precise neural representation of digital and physical constructs.
+Node Form Language (NFL) is a small toolkit for describing graphs of nodes and edges. This repository provides a core Python library, a REST API built with FastAPI and a command line interface.
 
-## Quick Start
+## Quick start
 
 ```bash
-git clone https://github.com/builtbycorelot/NFL && cd NFL
-docker build -t nfl-api .
-docker run -it --rm -p 8080:8080 \
-    -e PORT=8080 \
-    -e NEO4J_URI=bolt://host.docker.internal:7687 \
-    -e POSTGRES_URI="dbname=nfl user=nfl password=nfl host=host.docker.internal" \
-    nfl-api
-curl http://localhost:8080/health
+pip install -r requirements.txt
+# Validate an example graph
+python -m cli.nfl_cli validate examples/simple.json
+# Start the API
+uvicorn api:app --reload
 ```
 
 ## Core Verbs
@@ -138,3 +130,4 @@ Open a browser at `http://localhost` after running `docker-compose up` to view t
 1. **Supply chain tracking** – model suppliers and shipments to trace provenance.
 2. **AI knowledge graph** – capture domain knowledge and function calls in a single graph.
 3. **Regulatory compliance** – express policy as graph traits alongside code.
+

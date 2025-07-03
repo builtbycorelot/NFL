@@ -34,4 +34,3 @@ edge Task:title -> Person
     edges = data["edges"]
     assert {"from": "Person", "to": "Task"} in edges
     assert {"from": "Task", "from_field": "title", "to": "Person"} in edges
-

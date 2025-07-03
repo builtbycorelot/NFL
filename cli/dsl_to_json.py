@@ -30,7 +30,9 @@ def parse_file(path: str) -> Dict[str, Any]:
                     continue
                 m_field = re.match(r"(\w+)\s*:\s*([\w<>]+)", line)
                 if m_field:
-                    node["fields"].append({"name": m_field.group(1), "type": m_field.group(2)})
+                    node["fields"].append(
+                        {"name": m_field.group(1), "type": m_field.group(2)}
+                    )
                 continue
 
             if line.startswith("namespace"):

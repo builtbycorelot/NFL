@@ -3,6 +3,7 @@ import importlib
 
 # If real packages are missing, fall back to stubs
 packages = {
+
     'flask': 'offline_stubs.flask',
     'flask_cors': 'offline_stubs.flask_cors',
     'psycopg2': 'offline_stubs.psycopg2',

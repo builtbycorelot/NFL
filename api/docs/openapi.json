@@ -1,0 +1,17 @@
+{
+  "paths": {
+    "/health": {
+      "get": {}
+    },
+    "/nodes": {
+      "get": {}
+    },
+    "/edges": {
+      "get": {}
+    },
+    "/import": {
+      "post": {}
+    }
+  },
+  "title": "NFL API"
+}
