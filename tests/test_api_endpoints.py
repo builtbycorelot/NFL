@@ -27,3 +27,11 @@ def test_info_endpoint():
     assert 'version' in data
     assert 'start_time' in data
 
+
+def test_cypher_disabled(monkeypatch):
+    """Cypher endpoint should return 503 when Neo4j is disabled."""
+    monkeypatch.setattr(app, 'driver', None)
+    client = flask_app.test_client()
+    resp = client.post('/api/cypher', json={'query': 'RETURN 1'})
+    assert resp.status_code == 503
+
