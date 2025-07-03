@@ -10,13 +10,19 @@
       "get": {}
     },
     "/export/jsonld": {
-      "get": {}
-    },
-    "/export/owl": {
-      "get": {}
-    },
-    "/export/geojson": {
-      "get": {}
+      "get": {
+        "summary": "Export graph as JSON-LD",
+        "responses": {
+          "200": {
+            "description": "JSON-LD representation",
+            "content": {
+              "application/ld+json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
     },
     "/import": {
       "post": {}
