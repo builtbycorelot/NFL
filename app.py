@@ -5,6 +5,7 @@ import sqlite3
 from neo4j import GraphDatabase
 import os
 from datetime import datetime
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +18,11 @@ SQLITE_DB = os.getenv('SQLITE_DB', 'nfl.db')
 
 # Neo4j driver
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+
+# Service metadata
+VERSION = os.getenv("NFL_VERSION", "0.2.0")
+BUILD_SHA = os.getenv("BUILD_SHA", "dev")
+START_TIME = datetime.utcnow()
 
 # Initialize SQLite database
 def init_sqlite():
@@ -74,6 +80,48 @@ init_sqlite()
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'healthy', 'service': 'NFL Query API'})
+
+
+@app.route('/db/health', methods=['GET'])
+def db_health():
+    """Check connectivity to Neo4j and SQLite."""
+    status = {}
+    latency = {}
+
+    start = time.perf_counter()
+    try:
+        with driver.session() as session:
+            session.run("RETURN 1")
+        status['neo4j'] = 'ok'
+    except Exception:
+        status['neo4j'] = 'error'
+    latency['neo4j'] = round((time.perf_counter() - start) * 1000, 2)
+
+    start = time.perf_counter()
+    try:
+        conn = sqlite3.connect(SQLITE_DB)
+        conn.execute("SELECT 1")
+        conn.close()
+        status['sqlite'] = 'ok'
+    except Exception:
+        status['sqlite'] = 'error'
+    latency['sqlite'] = round((time.perf_counter() - start) * 1000, 2)
+
+    return jsonify({
+        'neo4j': status['neo4j'],
+        'sqlite': status['sqlite'],
+        'latency_ms': latency,
+    })
+
+
+@app.route('/info', methods=['GET'])
+def info():
+    """Return build and runtime metadata."""
+    return jsonify({
+        'version': VERSION,
+        'build_sha': BUILD_SHA,
+        'start_time': START_TIME.isoformat(),
+    })
 
 @app.route('/api/cypher', methods=['POST'])
 def execute_cypher():

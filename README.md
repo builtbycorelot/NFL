@@ -1,7 +1,22 @@
-* Node Form Language is a metaframework to organize knowledge and action. 
-* Graphs express relationships 
+![build](https://github.com/builtbycorelot/NFL/actions/workflows/ci.yml/badge.svg)
+![coverage](https://codecov.io/gh/builtbycorelot/NFL/branch/main/graph/badge.svg)
+
+* Node Form Language is a metaframework to organize knowledge and action.
+* Graphs express relationships
 * Hardware trust anchors secure deployments.
-* Minimalist lexicon for precise neural representation of digital and physical constructs. 
+* Minimalist lexicon for precise neural representation of digital and physical constructs.
+
+## Quick Start
+
+```bash
+git clone https://github.com/builtbycorelot/NFL && cd NFL
+docker build -t nfl-api .
+docker run -it --rm -p 8080:8080 \
+    -e PORT=8080 \
+    -e NEO4J_URI=bolt://host.docker.internal:7687 \
+    nfl-api
+curl http://localhost:8080/health
+```
 
 ## Core Verbs
 
@@ -27,9 +42,17 @@ Think of this as distilling ideas from RedNode and Neo4j into a tiny set of verb
 * [Graph IR Viewer](visualizer.html) – loads `index.nfl.json` automatically.
 * [Context](docs/context.md) – repository anchor and semantic index.
 * [CodeRabbit Badge](docs/coderabbit_badge.md) – badge parameters for PR review counts.
+* [Operational Spec](docs/operations.md) – run-book and API reference.
 
 ## Development and Testing
+Install dependencies in editable mode and run the tests:
 
+```bash
+pip install -e .[test]
+pytest -q
+```
+
+Neo4j tests skip automatically if `NEO4J_URI` is unset.
 
 ## Context
 
