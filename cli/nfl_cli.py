@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 
 from nfl import Graph, Executor
+from nfl.distributed.executor import DistributedExecutor
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
@@ -25,8 +26,29 @@ def cmd_import(args: argparse.Namespace) -> int:
 
 def cmd_exec(args: argparse.Namespace) -> int:
     g = Graph.load(args.file)
-    Executor(g).execute(args.node)
+    if args.backend == "distributed":
+        executor: Executor = DistributedExecutor(g)
+    else:
+        executor = Executor(g)
+    executor.execute(args.node)
     print(f"Executed {args.node}")
+    return 0
+
+
+def cmd_benchmark(args: argparse.Namespace) -> int:
+    import pytest
+
+    scale = {
+        "small": 10,
+        "medium": 100,
+        "large": 1000,
+    }[args.scale]
+
+    # Pass parameter via env var
+    import os
+
+    os.environ["NFL_BENCH_SCALE"] = str(scale)
+    pytest.main(["benchmarks", "-q"])
     return 0
 
 
@@ -46,7 +68,14 @@ def main(argv: list[str] | None = None) -> int:
     p_exec = sub.add_parser("exec", help="Execute a node in a graph")
     p_exec.add_argument("node")
     p_exec.add_argument("--file", required=True)
+    p_exec.add_argument("--backend", choices=["local", "distributed"], default="local")
     p_exec.set_defaults(func=cmd_exec)
+
+    p_bench = sub.add_parser("benchmark", help="Run benchmarks")
+    p_bench.add_argument(
+        "--scale", choices=["small", "medium", "large"], default="small"
+    )
+    p_bench.set_defaults(func=cmd_benchmark)
 
     args = parser.parse_args(argv)
     return args.func(args)
