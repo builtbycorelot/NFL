@@ -1,5 +1,8 @@
 {
   "paths": {
+    "/": {
+      "get": {}
+    },
     "/health": {
       "get": {}
     },
@@ -10,19 +13,13 @@
       "get": {}
     },
     "/export/jsonld": {
-      "get": {
-        "summary": "Export graph as JSON-LD",
-        "responses": {
-          "200": {
-            "description": "JSON-LD representation",
-            "content": {
-              "application/ld+json": {
-                "schema": { "type": "object" }
-              }
-            }
-          }
-        }
-      }
+      "get": {}
+    },
+    "/export/owl": {
+      "get": {}
+    },
+    "/export/geojson": {
+      "get": {}
     },
     "/import": {
       "post": {}
