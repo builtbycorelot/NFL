@@ -9,6 +9,21 @@
     "/edges": {
       "get": {}
     },
+    "/export/jsonld": {
+      "get": {
+        "summary": "Export graph as JSON-LD",
+        "responses": {
+          "200": {
+            "description": "JSON-LD representation",
+            "content": {
+              "application/ld+json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/import": {
       "post": {}
     }

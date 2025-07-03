@@ -1,56 +1,43 @@
 version: '3.8'
 services:
-  nfl:
+  nfl-server:
     build: .
-    command: uvicorn api:app --host 0.0.0.0 --port ${PORT:-8080}
-    volumes:
-      - .:/opt/app
-    depends_on:
-      - neo4j
-      - postgres
-    ports:
-      - "8080:8080"
-
-  api:
-    build: .
-    command: uvicorn api:app --host 0.0.0.0 --port 10000
-    volumes:
-      - .:/opt/app
-    depends_on:
-      - neo4j
     environment:
-      - NEO4J_URI=bolt://neo4j:7687
-      - NEO4J_USER=neo4j
-      - NEO4J_PASSWORD=test
+      STORAGE_BACKENDS: arrow,postgres,neo4j
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - neo4jdata:/data/neo4j
     ports:
-      - "10000:10000"
-
-  neo4j:
-    image: neo4j:latest
-    environment:
-      - NEO4J_AUTH=neo4j/test
-    ports:
+      - "8000:8000"
       - "7474:7474"
-      - "7687:7687"
 
   postgres:
-    image: postgres:alpine
+    image: postgres:15
     environment:
       POSTGRES_USER: nfl
-      POSTGRES_PASSWORD: nfl
-      POSTGRES_DB: nfl
-    ports:
-      - "5432:5432"
-
-  apache:
-    image: httpd:alpine
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: nfldb
     volumes:
-      - ./docs/site/index.html:/usr/local/apache2/htdocs/index.html:ro
-      - ./docs/site/overview.html:/usr/local/apache2/htdocs/overview.html:ro
-      - ./docs/site/visualizer.html:/usr/local/apache2/htdocs/visualizer.html:ro
-      - ./docs/site/explorer.html:/usr/local/apache2/htdocs/explorer.html:ro
-      - ./docs/site/nfl.js:/usr/local/apache2/htdocs/nfl.js:ro
-      - ./assets:/usr/local/apache2/htdocs/assets:ro
-      - ./examples:/usr/local/apache2/htdocs/examples:ro
+      - pgdata:/var/lib/postgresql/data
+
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: neo4j/secret
+    volumes:
+      - neo4jdata:/data
     ports:
-      - "80:80"
+      - "7687:7687"
+      - "7474:7474"
+
+  visualizer:
+    image: jupyter/base-notebook
+    volumes:
+      - shared-data:/data
+    ports:
+      - "8888:8888"
+
+volumes:
+  pgdata:
+  neo4jdata:
+  shared-data:
