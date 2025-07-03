@@ -23,6 +23,18 @@
   </ul>
   <p>See the <a href="https://builtbycorelot.github.io/NFL">GitHub Pages site</a> for a hosted version.</p>
 
+  <h2>API Usage</h2>
+  <p>The HTTP API is served from the same base URL as this page. Common routes:</p>
+  <pre>
+GET /health
+GET /db/health
+POST /api/cypher
+POST /api/sql
+  </pre>
+  <p>Download the <a href="openapi.json">OpenAPI specification</a> and open it with
+    <a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/builtbycorelot/NFL/main/openapi.json">Swagger UI</a>
+    for interactive documentation.</p>
+
   <h2>Service Health</h2>
   <pre id="health">Loading...</pre>
 

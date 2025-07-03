@@ -11,13 +11,19 @@ app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # Configuration
-NEO4J_URI = os.getenv('NEO4J_URI', 'bolt://localhost:7687')
+NEO4J_URI = os.getenv('NEO4J_URI')
 NEO4J_USER = os.getenv('NEO4J_USER', 'neo4j')
 NEO4J_PASSWORD = os.getenv('NEO4J_PASSWORD', 'password')
 SQLITE_DB = os.getenv('SQLITE_DB', 'nfl.db')
 
-# Neo4j driver
-driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+# Neo4j driver (optional)
+if NEO4J_URI:
+    try:
+        driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+    except Exception:
+        driver = None
+else:
+    driver = None
 
 @app.route('/')
 def root_page():
@@ -94,12 +100,15 @@ def db_health():
     latency = {}
 
     start = time.perf_counter()
-    try:
-        with driver.session() as session:
-            session.run("RETURN 1")
-        status['neo4j'] = 'ok'
-    except Exception:
-        status['neo4j'] = 'error'
+    if driver is not None:
+        try:
+            with driver.session() as session:
+                session.run("RETURN 1")
+            status['neo4j'] = 'ok'
+        except Exception:
+            status['neo4j'] = 'error'
+    else:
+        status['neo4j'] = 'disabled'
     latency['neo4j'] = round((time.perf_counter() - start) * 1000, 2)
 
     start = time.perf_counter()
@@ -151,6 +160,9 @@ def execute_cypher():
         forbidden_keywords = ['DELETE', 'DROP', 'CREATE INDEX', 'CREATE CONSTRAINT']
         if any(keyword in query.upper() for keyword in forbidden_keywords):
             return jsonify({'error': 'Forbidden operation'}), 403
+
+        if driver is None:
+            return jsonify({'error': 'Neo4j disabled'}), 503
 
         results = []
         with driver.session() as session:
@@ -249,22 +261,23 @@ def import_nfl_data():
         conn.commit()
         conn.close()
 
-        # Import to Neo4j
-        with driver.session() as session:
-            # Clear existing data
-            session.run("MATCH (n) DETACH DELETE n")
+        # Import to Neo4j if available
+        if driver is not None:
+            with driver.session() as session:
+                # Clear existing data
+                session.run("MATCH (n) DETACH DELETE n")
 
-            # Import teams as nodes
-            for team in data.get('teams', []):
-                session.run("""
-                    CREATE (t:Team {
-                        id: $id,
-                        name: $name,
-                        city: $city,
-                        conference: $conference,
-                        division: $division
-                    })
-                """, team)
+                # Import teams as nodes
+                for team in data.get('teams', []):
+                    session.run("""
+                        CREATE (t:Team {
+                            id: $id,
+                            name: $name,
+                            city: $city,
+                            conference: $conference,
+                            division: $division
+                        })
+                    """, team)
 
         return jsonify({
             'success': True,

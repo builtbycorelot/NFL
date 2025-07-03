@@ -1,5 +1,6 @@
 ![build](https://github.com/builtbycorelot/NFL/actions/workflows/ci.yml/badge.svg)
 ![coverage](https://codecov.io/gh/builtbycorelot/NFL/branch/main/graph/badge.svg)
+![compose](https://github.com/builtbycorelot/NFL/actions/workflows/test.yml/badge.svg)
 
 * Node Form Language is a metaframework to organize knowledge and action.
 * Graphs express relationships
@@ -43,6 +44,7 @@ Think of this as distilling ideas from RedNode and Neo4j into a tiny set of verb
 * [Context](docs/context.md) – repository anchor and semantic index.
 * [CodeRabbit Badge](docs/coderabbit_badge.md) – badge parameters for PR review counts.
 * [Operational Spec](docs/operations.md) – run-book and API reference.
+* [OpenAPI Spec](openapi.json) – generate interactive docs with Swagger UI.
 
 ## Development and Testing
 Install dependencies in editable mode and run the tests:
@@ -111,7 +113,10 @@ Install the package in editable mode and run the CLI:
 ```bash
 pip install -e .
 nfl-cli validate examples/simple.json
+nfl-cli examples/simple.json --export-openapi openapi.json
 ```
+
+Open `openapi.json` in [Swagger UI](https://petstore.swagger.io/) for interactive API docs.
 
 Open a browser at `http://localhost` after running `docker-compose up` to view the HTML pages served by Apache. Neo4j is available on port `7474` and PostgreSQL on `5432`.
 
