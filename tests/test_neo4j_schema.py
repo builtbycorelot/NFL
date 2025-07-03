@@ -15,4 +15,5 @@ class TestNeo4jSchema(unittest.TestCase):
 
 
 if __name__ == "__main__":
+
     unittest.main()
