@@ -97,7 +97,7 @@ init_postgres()
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'healthy', 'service': 'NFL Query API'})
+    return jsonify({'status': 'healthy', 'service': 'NodeForm Query API'})
 
 
 @app.route('/db/health', methods=['GET'])
@@ -152,12 +152,12 @@ def info():
 @app.route('/api/cypher', methods=['POST'])
 def execute_cypher():
     """
-    Execute Cypher queries against Neo4j graph database
+    Execute Cypher queries against the Neo4j graph database
 
     Expected JSON payload:
     {
-        "query": "MATCH (t:Team)-[:HAS_PLAYER]->(p:Player) WHERE t.name = $team_name RETURN p",
-        "parameters": {"team_name": "Cowboys"}
+        "query": "MATCH (g:Group)-[:HAS_MEMBER]->(m:Member) WHERE g.name = $group_name RETURN m",
+        "parameters": {"group_name": "ExampleGroup"}
     }
     """
     try:
@@ -251,9 +251,9 @@ def execute_sql():
         }), 500
 
 @app.route('/api/import', methods=['POST'])
-def import_nfl_data():
+def import_graph_data():
     """
-    Import NFL JSON data into both databases
+    Import NodeForm JSON data into both databases
     """
     try:
         data = request.json
@@ -266,7 +266,7 @@ def import_nfl_data():
             conn = psycopg2.connect(POSTGRES_URI)
             cursor = conn.cursor()
 
-            # Import teams
+            # Import entities
             for team in data.get('teams', []):
                 cursor.execute(
                     """
@@ -297,7 +297,7 @@ def import_nfl_data():
                 # Clear existing data
                 session.run("MATCH (n) DETACH DELETE n")
 
-                # Import teams as nodes
+                # Import entities as nodes
                 for team in data.get('teams', []):
                     session.run("""
                         CREATE (t:Team {
@@ -327,35 +327,35 @@ def get_examples():
     return jsonify({
         'cypher_examples': [
             {
-                'description': 'Find all players on a specific team',
-                'query': 'MATCH (t:Team {name: $team})-[:HAS_PLAYER]->(p:Player) RETURN p.name, p.position',
-                'parameters': {'team': 'Cowboys'}
+                'description': 'Find all members of a particular group',
+                'query': 'MATCH (g:Group {name: $group})-[:HAS_MEMBER]->(m:Member) RETURN m.name, m.role',
+                'parameters': {'group': 'ExampleGroup'}
             },
             {
-                'description': 'Find teams in same division',
-                'query': 'MATCH (t1:Team)-[:IN_DIVISION]->(d:Division)<-[:IN_DIVISION]-(t2:Team) WHERE t1.name = $team RETURN t2.name',
-                'parameters': {'team': 'Eagles'}
+                'description': 'Find groups in the same category',
+                'query': 'MATCH (g1:Group)-[:IN_CATEGORY]->(c:Category)<-[:IN_CATEGORY]-(g2:Group) WHERE g1.name = $group RETURN g2.name',
+                'parameters': {'group': 'GroupA'}
             },
             {
-                'description': 'Player connections through trades',
-                'query': 'MATCH path = (p1:Player)-[:TRADED_WITH*1..3]-(p2:Player) WHERE p1.name = $player RETURN path',
-                'parameters': {'player': 'Tom Brady'}
+                'description': 'Member connections through interactions',
+                'query': 'MATCH path = (m1:Member)-[:INTERACTED_WITH*1..3]-(m2:Member) WHERE m1.name = $member RETURN path',
+                'parameters': {'member': 'Alice'}
             }
         ],
         'sql_examples': [
             {
-                'description': 'Get team standings by conference',
-                'query': 'SELECT name, city, division FROM teams WHERE conference = %s ORDER BY division, name',
-                'parameters': ['AFC']
+                'description': 'Get group counts by category',
+                'query': 'SELECT name, category FROM groups WHERE category = %s ORDER BY name',
+                'parameters': ['Category1']
             },
             {
-                'description': 'Find games by score difference',
-                'query': 'SELECT * FROM games WHERE ABS(home_score - away_score) > %s ORDER BY game_date DESC',
+                'description': 'Find events by metric difference',
+                'query': 'SELECT * FROM events WHERE ABS(metric_a - metric_b) > %s ORDER BY event_date DESC',
                 'parameters': [20]
             },
             {
-                'description': 'Player stats by position',
-                'query': 'SELECT position, COUNT(*) as count, AVG(height) as avg_height FROM players GROUP BY position',
+                'description': 'Member stats by role',
+                'query': 'SELECT role, COUNT(*) as count, AVG(value) as avg_value FROM members GROUP BY role',
                 'parameters': []
             }
         ]
