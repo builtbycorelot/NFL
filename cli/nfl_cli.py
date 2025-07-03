@@ -1,137 +1,55 @@
 #!/usr/bin/env python3
-"""Simple CLI for working with NodeForm Language (NFL) files."""
+"""Command line interface for the NFL toolkit."""
+
+from __future__ import annotations
 
 import argparse
-import json
-import os
 
-try:
-    import jsonschema
-except Exception:  # pragma: no cover - optional dependency
-    jsonschema = None
-
-from . import nfl_to_openapi
-from . import nfl_to_semantics
+from nfl import Graph, Executor
 
 
-def load_json(path: str):
-    """Load a JSON file from *path*.
-
-    Any :class:`OSError` encountered while opening the file or
-    :class:`json.JSONDecodeError` raised during parsing is re-raised with
-    additional context describing the path being processed.
-    """
-    try:
-        with open(path, "r", encoding="utf-8") as fh:
-            return json.load(fh)
-    except OSError as exc:
-        raise IOError(f"Failed to read '{path}': {exc}") from exc
-    except json.JSONDecodeError as exc:
-        raise json.JSONDecodeError(
-            f"Invalid JSON in '{path}': {exc.msg}", exc.doc, exc.pos
-        ) from exc
+def cmd_validate(args: argparse.Namespace) -> int:
+    Graph.load(args.file)
+    print(f"{args.file} is valid")
+    return 0
 
 
-def validate_file(nfl_path: str, schema_path: str) -> bool:
-    """Validate *nfl_path* against *schema_path*.
+def cmd_import(args: argparse.Namespace) -> int:
+    import requests
 
-    Raises appropriate exceptions on failure and returns ``True`` when the file
-    is valid. Validation uses ``jsonschema`` and also ensures edges reference
-    existing nodes.
-    """
-    nfl = load_json(nfl_path)
-    schema = load_json(schema_path)
-
-    if jsonschema is None:
-        if not (isinstance(nfl, dict) and "nodes" in nfl and "edges" in nfl):
-            raise ValueError("Input is not a valid NFL graph")
-    else:
-        try:
-            jsonschema.validate(nfl, schema)
-        except jsonschema.exceptions.ValidationError as exc:
-            raise ValueError(exc.message) from exc
-
-    node_names = {n.get("name") for n in nfl.get("nodes", [])}
-    for edge in nfl.get("edges", []):
-        if edge.get("from") not in node_names or edge.get("to") not in node_names:
-            raise ValueError(f"Edge references undefined nodes: {edge}")
-
-    return True
+    g = Graph.load(args.file)
+    resp = requests.post(args.url.rstrip("/") + "/import", json=g.to_dict())
+    print(resp.json())
+    return 0
 
 
-def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Validate an NFL JSON file against the reference schema",
-    )
-    parser.add_argument(
-        "file",
-        help="Path to the NFL JSON file",
-    )
-    parser.add_argument(
-        "--schema",
-        default=os.path.join(os.path.dirname(__file__), "..", "schema", "nfl.schema.json"),
-        help="Path to the NFL JSON Schema (default: %(default)s)",
-    )
-    parser.add_argument(
-        "--export-openapi",
-        metavar="FILE",
-        help="Write an OpenAPI specification to FILE",
-    )
-    parser.add_argument(
-        "--export-jsonld",
-        metavar="FILE",
-        help="Write a JSON-LD graph to FILE",
-    )
-    parser.add_argument(
-        "--export-owl",
-        metavar="FILE",
-        help="Write an OWL/Turtle representation to FILE",
-    )
-    parser.add_argument(
-        "--export-geojson",
-        metavar="FILE",
-        help="Write a GeoJSON file to FILE",
-    )
-    parser.add_argument(
-        "--export-ifc",
-        metavar="FILE",
-        help="Write an IFC text representation to FILE",
-    )
+def cmd_exec(args: argparse.Namespace) -> int:
+    g = Graph.load(args.file)
+    Executor(g).execute(args.node)
+    print(f"Executed {args.node}")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="nfl")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    p_val = sub.add_parser("validate", help="Validate a graph file")
+    p_val.add_argument("file")
+    p_val.set_defaults(func=cmd_validate)
+
+    p_imp = sub.add_parser("import", help="Import a graph via the API")
+    p_imp.add_argument("file")
+    p_imp.add_argument("--url", default="http://localhost:8000")
+    p_imp.set_defaults(func=cmd_import)
+
+    p_exec = sub.add_parser("exec", help="Execute a node in a graph")
+    p_exec.add_argument("node")
+    p_exec.add_argument("--file", required=True)
+    p_exec.set_defaults(func=cmd_exec)
 
     args = parser.parse_args(argv)
-
-    try:
-        validate_file(args.file, args.schema)
-    except Exception as exc:
-        print(exc)
-        return 1
-
-    print(f"{args.file} is valid.")
-    if args.export_openapi:
-        spec = nfl_to_openapi.convert_file(args.file)
-        with open(args.export_openapi, "w", encoding="utf-8") as fh:
-            json.dump(spec, fh, indent=2)
-        print(f"OpenAPI written to {args.export_openapi}")
-
-    if any([args.export_jsonld, args.export_owl, args.export_geojson, args.export_ifc]):
-        converted = nfl_to_semantics.convert_file(args.file)
-        if args.export_jsonld:
-            with open(args.export_jsonld, "w", encoding="utf-8") as fh:
-                json.dump(converted["jsonld"], fh, indent=2)
-            print(f"JSON-LD written to {args.export_jsonld}")
-        if args.export_owl:
-            with open(args.export_owl, "w", encoding="utf-8") as fh:
-                fh.write(converted["owl"])
-            print(f"OWL written to {args.export_owl}")
-        if args.export_geojson:
-            with open(args.export_geojson, "w", encoding="utf-8") as fh:
-                json.dump(converted["geojson"], fh, indent=2)
-            print(f"GeoJSON written to {args.export_geojson}")
-        if args.export_ifc:
-            with open(args.export_ifc, "w", encoding="utf-8") as fh:
-                fh.write(converted["ifc"])
-            print(f"IFC written to {args.export_ifc}")
-    return 0
+    return args.func(args)
 
 
 if __name__ == "__main__":
