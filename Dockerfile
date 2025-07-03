@@ -9,4 +9,4 @@ COPY . .
 EXPOSE 8080
 ENV PORT 8080
 
-CMD ["/bin/sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-8080} app:app"]
+CMD ["/bin/sh", "-c", "uvicorn api:app --host 0.0.0.0 --port ${PORT:-8080}"]
