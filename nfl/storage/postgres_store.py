@@ -21,7 +21,9 @@ class PostgresStore:
         self.conn.commit()
         cur.close()
 
-    def query(self, sql: str, params: Iterable[Any] | None = None) -> list[tuple[Any, ...]]:
+    def query(
+        self, sql: str, params: Iterable[Any] | None = None
+    ) -> list[tuple[Any, ...]]:
         cur = self.conn.cursor()
         cur.execute(sql, params or [])
         rows = cur.fetchall()

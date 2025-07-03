@@ -4,12 +4,11 @@ services:
     build: .
     environment:
       STORAGE_BACKENDS: arrow,postgres,neo4j
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - neo4jdata:/data/neo4j
     ports:
       - "8000:8000"
-      - "7474:7474"
+    depends_on:
+      - postgres
+      - neo4j
 
   postgres:
     image: postgres:15

@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 try:
     from cli.nfl_to_semantics import convert_to_jsonld
 except Exception:  # pragma: no cover - optional dependency
+
     def convert_to_jsonld(nfl: Dict[str, Any]) -> Dict[str, Any]:
         """Fallback no-op if the optional dependency is missing."""
         return nfl
