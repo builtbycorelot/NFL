@@ -44,8 +44,9 @@ else:
     __all__.append("Neo4jStore")
 
 try:  # pragma: no cover - optional dependency may not be installed
-    from nfl_converters import to_geojson
+    from nfl_converters import to_geojson as _to_geojson
 except Exception:  # pragma: no cover - library may be missing
     pass
 else:
+    to_geojson = _to_geojson
     __all__.append("to_geojson")
