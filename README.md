@@ -101,6 +101,8 @@ Render maps `$PORT` to `8080` automatically. Create a second service if you
 need a private Neo4j container or point the variables at an AuraDB instance.
 The API routes live at the root domain on Render, so navigate to
 `https://your-app.onrender.com/health` instead of `/api/health`.
+See [docs/render_deployment.md](docs/render_deployment.md) for example
+deployment logs and the public URL.
 
 ## Quickstart
 
