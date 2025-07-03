@@ -1,0 +1,8 @@
+{
+  "pack": "groups",
+  "nodes": [
+    {"name": "Alpha Team", "type": "Team", "id": "ALPHA", "city": "Metro", "conference": "East", "division": "A"},
+    {"name": "Beta Team", "type": "Team", "id": "BETA", "city": "Central", "conference": "West", "division": "B"}
+  ],
+  "edges": []
+}

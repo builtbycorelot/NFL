@@ -1,0 +1,10 @@
+{
+  "pack": "nist800-53",
+  "nodes": [
+    {"id": "AC-1", "name": "Access Control Policy", "type": "Control"},
+    {"id": "AC-2", "name": "Account Management", "type": "Control"}
+  ],
+  "edges": [
+    {"from": "AC-1", "to": "AC-2", "trait": ["related"]}
+  ]
+}

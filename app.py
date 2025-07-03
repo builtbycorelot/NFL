@@ -21,6 +21,17 @@ POSTGRES_URI = os.getenv('POSTGRES_URI', 'dbname=nfl user=nfl password=nfl host=
 if NEO4J_URI:
     try:
         driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+        def init_neo4j_schema():
+            """Create indexes and constraints required by the API."""
+            schema_path = os.path.join(os.path.dirname(__file__), 'schema', 'neo4j_schema.cypher')
+            if not os.path.exists(schema_path):
+                return
+            with open(schema_path, 'r', encoding='utf-8') as fh:
+                statements = [s.strip() for s in fh.read().split(';') if s.strip()]
+            with driver.session() as session:
+                for stmt in statements:
+                    session.run(stmt)
+        init_neo4j_schema()
     except Exception:
         driver = None
 else:
