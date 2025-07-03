@@ -15,6 +15,7 @@ docker build -t nfl-api .
 docker run -it --rm -p 8080:8080 \
     -e PORT=8080 \
     -e NEO4J_URI=bolt://host.docker.internal:7687 \
+    -e POSTGRES_URI="dbname=nfl user=nfl password=nfl host=host.docker.internal" \
     nfl-api
 curl http://localhost:8080/health
 ```
@@ -96,7 +97,7 @@ Service type: Web Service
 Build Command: (leave blank)
 Start Command: (leave blank)
 Health Check path: /health
-Env vars: NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
+Env vars: NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, POSTGRES_URI
 ```
 
 Render maps `$PORT` to `8080` automatically. Create a second service if you
