@@ -22,5 +22,32 @@
     <li><a href="https://nfl-s9by.onrender.com">Live Service</a></li>
   </ul>
   <p>See the <a href="https://builtbycorelot.github.io/NFL">GitHub Pages site</a> for a hosted version.</p>
+
+  <h2>Service Health</h2>
+  <pre id="health">Loading...</pre>
+
+  <script>
+    async function loadHealth() {
+      try {
+        const [dbResp, infoResp] = await Promise.all([
+          fetch('db/health'),
+          fetch('info')
+        ]);
+        const db = await dbResp.json();
+        const info = await infoResp.json();
+        const lines = [
+          `Neo4j: ${db.neo4j} (${db.latency_ms.neo4j} ms)`,
+          `SQLite: ${db.sqlite} (${db.latency_ms.sqlite} ms)`,
+          `Version: ${info.version}`,
+          `Build: ${info.build_sha}`,
+          `Started: ${info.start_time}`
+        ];
+        document.getElementById('health').textContent = lines.join('\n');
+      } catch (err) {
+        document.getElementById('health').textContent = 'Unable to load metrics';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', loadHealth);
+  </script>
 </body>
 </html>
