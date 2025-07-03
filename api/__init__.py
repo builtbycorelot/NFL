@@ -8,9 +8,10 @@ from fastapi import FastAPI
 from .routes import router
 
 app = FastAPI(title="NFL API")
+app = FastAPI(title="NFL API")
 
 # serve a simple landing page linking to documentation
-
+@app.get("/")
 @app.get("/")
 def index() -> str:
     """Landing page with helpful links."""
