@@ -16,7 +16,7 @@ def test_db_health_endpoint():
     assert resp.status_code == 200
     data = resp.get_json()
     assert 'neo4j' in data
-    assert 'sqlite' in data
+    assert 'postgres' in data
 
 
 def test_info_endpoint():

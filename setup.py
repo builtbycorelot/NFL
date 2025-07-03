@@ -17,6 +17,7 @@ setup(
         "neo4j-driver",
         "gunicorn",
         "python-dotenv",
+        "psycopg2-binary",
     ],
     extras_require={
         "test": [

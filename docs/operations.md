@@ -28,8 +28,8 @@ curl http://localhost:8080/health  # -> {"status":"ok"}
 | `PORT` | `8080` | Required on Render. TCP port the API binds. |
 | `WORKERS` | `2` | Gunicorn worker count. |
 | `LOG_LEVEL` | `info` | debug/info/warning/error |
-| `NEO4J_URI` | *(empty – SQLite only mode)* | Bolt URI; if unset, Neo4j routes are disabled. |
-| `SQLITE_PATH` | `data/nfl.db` | File path for local embedded SQLite. |
+| `NEO4J_URI` | *(empty – Neo4j disabled)* | Bolt URI; if unset, Neo4j routes are disabled. |
+| `POSTGRES_URI` | `dbname=nfl user=nfl password=nfl host=localhost` | Connection string for PostgreSQL. |
 
 ## API Surface
 
