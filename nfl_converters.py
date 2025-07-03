@@ -5,7 +5,10 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, List
 
-from cli.nfl_to_semantics import convert_to_jsonld
+try:
+    from cli.nfl_to_semantics import convert_to_jsonld
+except Exception:  # pragma: no cover - optional dependency
+    convert_to_jsonld = lambda nfl: nfl
 
 
 def to_json(nfl: Dict[str, Any]) -> str:

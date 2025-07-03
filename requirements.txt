@@ -3,6 +3,7 @@ pytest-benchmark
 jsonschema
 fastapi
 uvicorn
+gunicorn
 requests
 ruff
 black

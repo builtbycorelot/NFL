@@ -32,8 +32,8 @@ Think of this as distilling ideas from RedNode and Neo4j into a tiny set of verb
  
 ## Live Visuals
 
-* [Launch Page](index.html) – repository overview and links
-* [Graph IR Viewer](visualizer.html) – loads `index.nfl.json` automatically.
+* [Launch Page](docs/site/index.html) – repository overview and links
+* [Graph IR Viewer](docs/site/visualizer.html) – loads `examples/index.nfl.json` automatically.
 * [Context](docs/context.md) – repository anchor and semantic index.
 * [CodeRabbit Badge](docs/coderabbit_badge.md) – badge parameters for PR review counts.
 * [Operational Spec](docs/operations.md) – run-book and API reference.
@@ -79,8 +79,9 @@ docker-compose ps
 
 You should see `nfl`, `api`, `neo4j`, `postgres` and `apache` listed as `Up`.
 The API server listens on `http://localhost:8080` for requests. Open
-`http://localhost` to confirm the HTML pages load. The HTML under `/docs`
-is served by the Apache container when running `docker-compose` locally.
+`http://localhost` to confirm the HTML pages load. The static pages in
+`docs/site` are served by the Apache container when running `docker-compose`
+locally.
 Run the Cypher statements in `schema/neo4j_schema.cypher` to create
 basic indexes and load sample groups using `examples/groups.json` via the
 `/api/import` endpoint.
