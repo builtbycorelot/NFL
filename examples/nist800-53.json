@@ -5,6 +5,6 @@
     {"id": "AC-2", "name": "Account Management", "type": "Control"}
   ],
   "edges": [
-    {"from": "AC-1", "to": "AC-2", "trait": ["related"]}
+    {"from": "Access Control Policy", "to": "Account Management", "trait": ["related"]}
   ]
 }
