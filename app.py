@@ -21,6 +21,17 @@ POSTGRES_URI = os.getenv('POSTGRES_URI', 'dbname=nfl user=nfl password=nfl host=
 if NEO4J_URI:
     try:
         driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+        def init_neo4j_schema():
+            """Create indexes and constraints required by the API."""
+            schema_path = os.path.join(os.path.dirname(__file__), 'schema', 'neo4j_schema.cypher')
+            if not os.path.exists(schema_path):
+                return
+            with open(schema_path, 'r', encoding='utf-8') as fh:
+                statements = [s.strip() for s in fh.read().split(';') if s.strip()]
+            with driver.session() as session:
+                for stmt in statements:
+                    session.run(stmt)
+        init_neo4j_schema()
     except Exception:
         driver = None
 else:
@@ -252,22 +263,20 @@ def execute_sql():
 
 @app.route('/api/import', methods=['POST'])
 def import_graph_data():
-    """
-    Import NodeForm JSON data into both databases
-    """
+    """Import NodeForm JSON data into Neo4j and PostgreSQL."""
     try:
-        data = request.json
+        data = request.json or {}
 
-        # Validate against NFL schema first
-        # ... validation logic ...
+        nodes = data.get('nodes', [])
+        edges = data.get('edges', [])
 
-        # Import to PostgreSQL
-        if POSTGRES_URI:
+        # Import to PostgreSQL using the "teams" table for Team nodes only
+        if POSTGRES_URI and nodes:
             conn = psycopg2.connect(POSTGRES_URI)
             cursor = conn.cursor()
-
-            # Import entities
-            for team in data.get('teams', []):
+            for node in nodes:
+                if node.get('type') != 'Team':
+                    continue
                 cursor.execute(
                     """
                     INSERT INTO teams (id, name, city, conference, division)
@@ -279,40 +288,48 @@ def import_graph_data():
                         division = EXCLUDED.division
                     """,
                     (
-                        team['id'],
-                        team['name'],
-                        team.get('city'),
-                        team.get('conference'),
-                        team.get('division'),
+                        node.get('id'),
+                        node.get('name'),
+                        node.get('city'),
+                        node.get('conference'),
+                        node.get('division'),
                     ),
                 )
-
             conn.commit()
             cursor.close()
             conn.close()
 
-        # Import to Neo4j if available
-        if driver is not None:
+        # Import to Neo4j
+        if driver is not None and nodes:
             with driver.session() as session:
-                # Clear existing data
                 session.run("MATCH (n) DETACH DELETE n")
-
-                # Import entities as nodes
-                for team in data.get('teams', []):
-                    session.run("""
-                        CREATE (t:Team {
-                            id: $id,
-                            name: $name,
-                            city: $city,
-                            conference: $conference,
-                            division: $division
-                        })
-                    """, team)
+                for node in nodes:
+                    session.run(
+                        "CREATE (n:Node {id: $id, name: $name, type: $type})",
+                        {
+                            'id': node.get('id'),
+                            'name': node.get('name'),
+                            'type': node.get('type'),
+                        },
+                    )
+                for edge in edges:
+                    session.run(
+                        """
+                        MATCH (a {id: $from}), (b {id: $to})
+                        MERGE (a)-[r:RELATED]->(b)
+                        SET r.trait = $trait
+                        """,
+                        {
+                            'from': edge.get('from'),
+                            'to': edge.get('to'),
+                            'trait': edge.get('trait'),
+                        },
+                    )
 
         return jsonify({
             'success': True,
             'message': 'Data imported successfully',
-            'timestamp': datetime.utcnow().isoformat()
+            'timestamp': datetime.utcnow().isoformat(),
         })
 
     except Exception as e:
