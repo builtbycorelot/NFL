@@ -8,8 +8,13 @@ from fastapi import FastAPI
 from .routes import router
 
 app = FastAPI(title="NFL API")
+# api/__init__.py
+
+# … earlier code …
+
 app = FastAPI(title="NFL API")
 
+# … remaining code …
 # serve a simple landing page linking to documentation
 @app.get("/")
 @app.get("/")
