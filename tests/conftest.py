@@ -8,6 +8,7 @@ packages = {
     "psycopg2": "offline_stubs.psycopg2",
     "psycopg2.extras": "offline_stubs.psycopg2.extras",
     "neo4j": "offline_stubs.neo4j",
+    "fastapi": "fastapi_stubs",
 }
 
 for pkg, stub in packages.items():
