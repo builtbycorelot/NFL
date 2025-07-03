@@ -21,6 +21,12 @@ Smoke test:
 curl http://localhost:8080/health  # -> {"status":"ok"}
 ```
 
+### Seed Data
+
+Run the Cypher statements in `schema/neo4j_schema.cypher` to create
+indexes in Neo4j. The example file `examples/groups.json` can then be
+imported via `POST /api/import` to populate sample groups for testing.
+
 ## Runtime Configuration
 
 | Variable | Default | Description |
