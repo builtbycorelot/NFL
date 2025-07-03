@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import json
 import sqlite3
@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # Configuration
@@ -18,6 +18,11 @@ SQLITE_DB = os.getenv('SQLITE_DB', 'nfl.db')
 
 # Neo4j driver
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+
+@app.route('/')
+def root_page():
+    """Serve the index.html landing page with health metrics."""
+    return app.send_static_file('index.html')
 
 # Service metadata
 VERSION = os.getenv("NFL_VERSION", "0.2.0")
