@@ -2,3 +2,4 @@ jsonschema
 pytest
 ruff
 black
+-e .
