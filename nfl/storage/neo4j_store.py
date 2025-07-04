@@ -5,6 +5,7 @@ from typing import Any
 try:
     from neo4j import GraphDatabase
 except Exception:  # pragma: no cover - fallback stub
+
     class _Session:
         def run(self, query: str, parameters=None):
             return []

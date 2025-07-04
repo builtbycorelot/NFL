@@ -54,7 +54,6 @@ def main(argv: list[str] | None = None) -> int:
     p_exec.add_argument("--backend", choices=["local", "distributed"], default="local")
     p_exec.set_defaults(func=cmd_exec)
 
-
     args = parser.parse_args(argv)
     return args.func(args)
 

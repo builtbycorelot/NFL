@@ -7,7 +7,7 @@ Node Form Language (NFL) is a small toolkit for describing graphs of nodes and e
 ```bash
 pip install -r requirements.txt
 # Validate a graph file
-python -m cli.nfl_cli validate path/to/graph.json
+nfl-cli validate path/to/graph.json
 # Start the API
 uvicorn api:app --reload
 ```
