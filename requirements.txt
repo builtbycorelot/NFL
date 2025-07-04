@@ -1,9 +1,5 @@
-pytest
-pytest-benchmark
 jsonschema
-fastapi
-uvicorn
-gunicorn
-requests
+pytest
 ruff
 black
+-e .
