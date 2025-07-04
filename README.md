@@ -6,8 +6,8 @@ Node Form Language (NFL) is a small toolkit for describing graphs of nodes and e
 
 ```bash
 pip install -r requirements.txt
-# Validate an example graph
-python -m cli.nfl_cli validate examples/simple.json
+# Validate a graph file
+python -m cli.nfl_cli validate path/to/graph.json
 # Start the API
 uvicorn api:app --reload
 ```
@@ -30,36 +30,13 @@ Think of this as distilling ideas from RedNode and Neo4j into a tiny set of verb
 
  (JSON‑LD, OWL, GeoJSON) while preserving meaning. The `SemanticLedger` tracks provenance and resources.
  
-## Live Visuals
+## Visuals
 
-* [Launch Page](docs/site/index.html) – repository overview and links
-* [Graph IR Viewer](docs/site/visualizer.html) – loads `examples/index.nfl.json` automatically.
-* [Context](docs/context.md) – repository anchor and semantic index.
-* [CodeRabbit Badge](docs/coderabbit_badge.md) – badge parameters for PR review counts.
-* [Operational Spec](docs/operations.md) – run-book and API reference.
 * [OpenAPI Spec](openapi.json) – generate interactive docs with Swagger UI.
-* [DSL Syntax](docs/nfl_dsl.md) – overview of the Node Form Language.
-
-## Development and Testing
-Install dependencies in editable mode and run the tests:
-
-```bash
-pip install -e .[test]
-pytest -q
-```
-
-Neo4j tests skip automatically if `NEO4J_URI` is unset.
-
-## Context
-
-See [docs/context.md](docs/context.md) for a short explanation of how the six verbs fit together and how to read NFL graphs.
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Benchmark Harness
-
 
 ## Docker Compose
 
@@ -79,13 +56,9 @@ docker-compose ps
 
 You should see `nfl`, `api`, `neo4j`, `postgres` and `apache` listed as `Up`.
 The API server listens on `http://localhost:8080` for requests. Open
-`http://localhost` to confirm the HTML pages load. The static pages in
-`docs/site` are served by the Apache container when running `docker-compose`
-locally.
+`http://localhost` to confirm the HTML pages load.
 Run the Cypher statements in `schema/neo4j_schema.cypher` to create
-basic indexes and load sample groups using `examples/groups.json` via the
-`/api/import` endpoint.
-See [docs/docker.md](docs/docker.md) for more details.
+basic indexes and load sample groups via the `/api/import` endpoint.
 
 ## Deploy on Render
 
@@ -101,8 +74,6 @@ Render maps `$PORT` to `8080` automatically. Create a second service if you
 need a private Neo4j container or point the variables at an AuraDB instance.
 The API routes live at the root domain on Render, so navigate to
 `https://your-app.onrender.com/health` instead of `/api/health`.
-See [docs/render_deployment.md](docs/render_deployment.md) for example
-deployment logs and the public URL.
 
 ## Quickstart
 
@@ -110,9 +81,8 @@ Install the package in editable mode and run the CLI:
 
 ```bash
 pip install -e .
-nfl-cli validate examples/simple.json
-nfl-cli exec --file examples/simple.json start
-nfl-cli benchmark --scale small
+nfl-cli validate path/to/graph.json
+nfl-cli exec --file path/to/graph.json start
 ```
 
 Open `openapi.json` in [Swagger UI](https://petstore.swagger.io/) for interactive API docs.

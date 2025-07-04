@@ -35,23 +35,6 @@ def cmd_exec(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_benchmark(args: argparse.Namespace) -> int:
-    import pytest
-
-    scale = {
-        "small": 10,
-        "medium": 100,
-        "large": 1000,
-    }[args.scale]
-
-    # Pass parameter via env var
-    import os
-
-    os.environ["NFL_BENCH_SCALE"] = str(scale)
-    pytest.main(["benchmarks", "-q"])
-    return 0
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nfl")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -71,11 +54,6 @@ def main(argv: list[str] | None = None) -> int:
     p_exec.add_argument("--backend", choices=["local", "distributed"], default="local")
     p_exec.set_defaults(func=cmd_exec)
 
-    p_bench = sub.add_parser("benchmark", help="Run benchmarks")
-    p_bench.add_argument(
-        "--scale", choices=["small", "medium", "large"], default="small"
-    )
-    p_bench.set_defaults(func=cmd_benchmark)
 
     args = parser.parse_args(argv)
     return args.func(args)
