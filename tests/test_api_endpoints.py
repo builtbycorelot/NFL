@@ -5,6 +5,12 @@ from api import app
 client = TestClient(app)
 
 
+def test_root_landing_page():
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert "Swagger UI" in resp._data
+
+
 def test_health_endpoint():
     resp = client.get("/health")
     assert resp.status_code == 200
