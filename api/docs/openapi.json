@@ -1,5 +1,8 @@
 {
   "paths": {
+    "/": {
+      "get": {}
+    },
     "/health": {
       "get": {}
     },
@@ -23,6 +26,12 @@
           }
         }
       }
+    },
+    "/export/owl": {
+      "get": {}
+    },
+    "/export/geojson": {
+      "get": {}
     },
     "/import": {
       "post": {}
