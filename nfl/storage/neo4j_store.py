@@ -4,8 +4,20 @@ from typing import Any
 
 try:
     from neo4j import GraphDatabase
-except Exception:  # pragma: no cover - offline stub
-    from offline_stubs.neo4j import GraphDatabase
+except Exception:  # pragma: no cover - fallback stub
+
+    class _Session:
+        def run(self, query: str, parameters=None):
+            return []
+
+    class _Driver:
+        def session(self):
+            return _Session()
+
+    class GraphDatabase:  # type: ignore
+        @staticmethod
+        def driver(uri: str, auth=None):
+            return _Driver()
 
 
 class Neo4jStore:

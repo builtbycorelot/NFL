@@ -4,8 +4,26 @@ from typing import Any, Iterable
 
 try:
     import psycopg2
-except Exception:  # pragma: no cover - offline stub
-    from offline_stubs import psycopg2
+except Exception:  # pragma: no cover - fallback stub
+    import sqlite3
+
+    class extras:
+        class RealDictCursor(sqlite3.Cursor):
+            pass
+
+    class _Connection(sqlite3.Connection):
+        def cursor(self, cursor_factory=None):
+            cur = super().cursor()
+            if cursor_factory is extras.RealDictCursor:
+                self.row_factory = sqlite3.Row
+            return cur
+
+    class psycopg2:  # type: ignore
+        extras = extras
+
+        @staticmethod
+        def connect(dsn: str):
+            return _Connection(":memory:")
 
 
 class PostgresStore:
