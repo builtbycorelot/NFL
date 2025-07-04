@@ -1,0 +1,5 @@
+[project]
+dependencies = [
+    "lark-parser>=0.12",
+    "jsonschema>=4.22"
+]

@@ -1,4 +1,5 @@
-jsonschema
+jsonschema>=4.22
+lark-parser>=0.12
 pytest
 ruff
 black

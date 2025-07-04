@@ -1,45 +1,118 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "NodeForm Language Graph",
-  "type": "object",
-  "properties": {
-    "pack": { "type": "string" },
-    "nodes": {
-      "type": "array",
-      "items": {
-        "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/builtbycorelot/NFL/main/schema/nfl.schema.json",
+  "title": "Node Form Language – structural schema (v0.3)",
+  "type": "array",
+  "items": { "$ref": "#/$defs/node" },
+  "$defs": {
+    "edge": {
+      "type": "object",
+      "required": ["relation", "target"],
+      "properties": {
+        "relation": { "type": "string" },
+        "target":   { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "isa"],
+      "properties": {
+        "id":  { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$" },
+        "isa": { "type": "string", "enum": ["Organization", "System", "Workflow", "Step"] },
+        "traits": { "type": "object", "additionalProperties": true },
+        "edges":  {
+          "type": "array",
+          "items": { "$ref": "#/$defs/edge" }
+        }
+      },
+      "allOf": [
+        { "$ref": "#/$defs/orgNode"      },
+        { "$ref": "#/$defs/systemNode"   },
+        { "$ref": "#/$defs/workflowNode" },
+        { "$ref": "#/$defs/stepNode"     }
+      ],
+      "additionalProperties": false
+    },
+
+
+
+    "orgNode": {
+      "if":   { "properties": { "isa": { "const": "Organization" } } },
+      "then": {
         "properties": {
-          "name": { "type": "string" },
-          "type": { "type": "string" },
-          "state": { "type": "object" },
           "traits": {
-            "type": "array",
-            "items": { "type": "string" }
+            "required": ["label", "purpose"],
+            "properties": {
+              "label":   { "type": "string" },
+              "purpose": { "type": "string" }
+            }
           },
-          "impl": { "type": "object" }
-        },
-        "required": ["name", "type"],
-        "additionalProperties": true
+          "edges": {
+            "items": {
+              "if":   { "properties": { "relation": { "const": "uses" } } },
+              "then": { "properties": { "target": { "type": "string" } } }
+            }
+          }
+        }
       }
     },
-    "edges": {
-      "type": "array",
-      "items": {
-        "type": "object",
+
+    "systemNode": {
+      "if":   { "properties": { "isa": { "const": "System" } } },
+      "then": {
         "properties": {
-          "from": { "type": "string" },
-          "to": { "type": "string" },
           "traits": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "impl": { "type": "object" }
+            "required": ["category", "capabilities"],
+            "properties": {
+              "category":    { "type": "string" },
+              "capabilities":{ "type": "array", "items": { "type": "string" } }
+            }
+          }
         },
-        "required": ["from", "to"],
-        "additionalProperties": true
+        "not": { "required": ["edges"] }
+      }
+    },
+
+    "workflowNode": {
+      "if":   { "properties": { "isa": { "const": "Workflow" } } },
+      "then": {
+        "properties": {
+          "traits": {
+            "required": ["trigger"],
+            "properties": {
+              "trigger": { "type": "string" },
+              "logic":   { "type": "object" }
+            }
+          },
+          "edges": {
+            "items": { "properties": { "relation": { "const": "step" } } }
+          }
+        }
+      }
+    },
+
+    "stepNode": {
+      "if":   { "properties": { "isa": { "const": "Step" } } },
+      "then": {
+        "properties": {
+          "traits": {
+            "required": ["action"],
+            "properties": {
+              "action":    { "type": "string" },
+              "action_py": { "type": "string" },
+              "action_js": { "type": "string" },
+              "action_ai": { "type": "string" }
+            },
+            "oneOf": [
+              { "required": ["action_py"] },
+              { "required": ["action_js"] },
+              { "required": ["action_ai"] }
+            ]
+          }
+        },
+        "not": { "properties": { "edges": { "minItems": 1 } } }
       }
     }
-  },
-  "required": ["pack"],
-  "additionalProperties": true
+  }
 }
