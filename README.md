@@ -36,6 +36,11 @@ from nfl import to_jsonld, to_owl, to_xml, to_sql
 
 The `to_owl` function outputs a Turtle string suitable for RDF tooling.
 
+## Documentation
+
+* [NFL Syntax](docs/NFL_Syntax.md)
+* [Execution Semantics](docs/NFL_Semantics.md)
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
