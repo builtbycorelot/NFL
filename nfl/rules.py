@@ -1,4 +1,5 @@
 """Minimal rule engine for NFL 'logic' trait."""
+
 from __future__ import annotations
 from typing import Any, Dict
 
@@ -16,16 +17,16 @@ def evaluate_logic(logic: Dict[str, Any] | None, scope: Dict[str, Any]) -> bool:
     """
     if not logic:
         return True
-    if 'expr' in logic:
-        return bool(eval(str(logic['expr']), {}, {'scope': scope}))
-    if 'all' in logic:
-        return all(evaluate_logic(item, scope) for item in logic['all'])
-    if 'any' in logic:
-        return any(evaluate_logic(item, scope) for item in logic['any'])
-    if 'not' in logic:
-        return not evaluate_logic(logic['not'], scope)
-    if 'equals' in logic:
-        left, right = logic['equals']
+    if "expr" in logic:
+        return bool(eval(str(logic["expr"]), {}, {"scope": scope}))
+    if "all" in logic:
+        return all(evaluate_logic(item, scope) for item in logic["all"])
+    if "any" in logic:
+        return any(evaluate_logic(item, scope) for item in logic["any"])
+    if "not" in logic:
+        return not evaluate_logic(logic["not"], scope)
+    if "equals" in logic:
+        left, right = logic["equals"]
         lv = scope.get(left, left) if isinstance(left, str) else left
         rv = scope.get(right, right) if isinstance(right, str) else right
         return lv == rv
