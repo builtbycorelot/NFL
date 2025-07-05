@@ -1,3 +1,4 @@
+'use strict';
 const fs = require('fs').promises;
 const yaml = require('js-yaml');
 const { Parser, Writer } = require('n3'); // For Turtle/RDF
@@ -28,14 +29,21 @@ async function parseNFL(filePath) {
       currentNode = { id, properties: {}, traits: {} };
       pack.nodes[id] = currentNode;
     } else if (line.startsWith('edge:')) {
-      const [source, , rel, , target] = trimmed.split(' ');
-      pack.edges.push({ source, relationship: rel, target, properties: {} });
+      const edgeMatch = trimmed.match(/^edge:\s+(\S+)\s+->\s+(?:([^\s]+)\s+->\s+)?(\S+)/);
+      if (edgeMatch) {
+        const [, src, rel, tgt] = edgeMatch;
+        pack.edges.push({ source: src, relationship: rel || 'relatedTo', target: tgt, properties: {} });
+      }
       currentNode = null;
     } else if (line.startsWith('  | trait.')) {
       currentTrait = trimmed.match(/trait\.(\w+)/)[1];
       currentNode.traits[currentTrait] = {};
     } else if (line.startsWith('  | ') || line.startsWith('    | ')) {
-      const [key, value] = trimmed.slice(2).split(': ').map(s => s.replace(/^"|"$/g, ''));
+      const text = trimmed.slice(2);
+      const idx = text.indexOf(':');
+      const key = text.slice(0, idx).trim();
+      let value = text.slice(idx + 1).trim();
+      value = value.replace(/^"|"$/g, '');
       if (line.startsWith('    | ')) {
         currentNode.traits[currentTrait][key] = value;
       } else if (currentNode) {
@@ -138,26 +146,28 @@ function toCSV(nflData) {
 
 // CSV to NFL
 function fromCSV({ nodes, edges }) {
-  const nodeLines = nodes.split('\n').slice(1); // Skip header
-  const edgeLines = edges.split('\n').slice(1);
+  const [nodeHeader, ...nodeLines] = nodes.trim().split('\n');
+  const nodeHeaders = nodeHeader.split(',');
+  const [edgeHeader, ...edgeLines] = edges.trim().split('\n');
+  const edgeHeaders = edgeHeader.split(',');
   let nfl = `pack: Converted_Pack\n  | title: "Converted from CSV"\n  | version: "2025-07-04"\n\n`;
-  
+
   for (const line of nodeLines) {
     if (!line) continue;
-    const [id, isa, name, description, ...rest] = line.split(',').map(s => s.replace(/^"|"$/g, ''));
+    const values = line.split(',').map(s => s.replace(/^"|"$/g, ''));
+    const row = {};
+    nodeHeaders.forEach((h, idx) => { row[h] = values[idx]; });
+    const { id, isa, name, description, ...rest } = row;
     nfl += `node: ${id}\n`;
     nfl += `  | isa: "${isa}"\n`;
     if (name) nfl += `  | name: "${name}"\n`;
     if (description) nfl += `  | description: "${description}"\n`;
     const stats = {};
-    rest.forEach((val, idx) => {
-      if (val) {
-        const key = Object.keys(csvStringify([{}], { header: true }).split('\n')[0].split(','))[idx + 4];
-        if (key.startsWith('stats_')) {
-          stats[key.replace('stats_', '')] = val;
-        }
+    for (const [key, val] of Object.entries(rest)) {
+      if (val && key.startsWith('stats_')) {
+        stats[key.replace('stats_', '')] = val;
       }
-    });
+    }
     if (Object.keys(stats).length) {
       nfl += `  | trait.stats\n`;
       for (const [key, value] of Object.entries(stats)) {
@@ -169,9 +179,14 @@ function fromCSV({ nodes, edges }) {
   
   for (const line of edgeLines) {
     if (!line) continue;
-    const [source, relationship, target, since] = line.split(',').map(s => s.replace(/^"|"$/g, ''));
+    const values = line.split(',').map(s => s.replace(/^"|"$/g, ''));
+    const row = {};
+    edgeHeaders.forEach((h, idx) => { row[h] = values[idx]; });
+    const { source, relationship, target, ...props } = row;
     nfl += `edge: ${source} -> ${relationship} -> ${target}\n`;
-    if (since) nfl += `  | since: "${since}"\n`;
+    for (const [k, v] of Object.entries(props)) {
+      if (v) nfl += `  | ${k}: "${v}"\n`;
+    }
     nfl += '\n';
   }
   return nfl;
@@ -361,7 +376,8 @@ async function toNeo4j(nflData, uri, user, password) {
   const session = driver.session();
   try {
     for (const [id, node] of Object.entries(nflData.nodes)) {
-      const labels = [node.properties.isa || 'Thing', 'Thing'];
+      const labels = [node.properties.isa || 'Thing'];
+      if (!labels.includes('Thing')) labels.push('Thing');
       const props = { id, ...node.properties, stats: node.traits.stats || {} };
       await session.run(
         `CREATE (n:${labels.join(':')} $props)`,
