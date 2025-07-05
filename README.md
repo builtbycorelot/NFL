@@ -44,3 +44,10 @@ The `to_owl` function outputs a Turtle string suitable for RDF tooling.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Node.js Conversion Utility
+
+A `nfl_conversions.js` script provides conversions between NFL text and various other
+formats (JSON-LD, CSV, YAML, Turtle, GraphQL and more). Install dependencies
+using `npm install` and run `node nfl_conversions.js` to experiment with converting
+a `sample.nfl` file across these representations.
