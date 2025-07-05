@@ -1,5 +1,6 @@
 import sys
 import pathlib
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import pytest
 from nfl import validate_graph, to_jsonld, to_owl, to_xml, to_sql

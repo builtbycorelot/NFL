@@ -1,0 +1,7 @@
+// NFL v0.3
+node: sample_workflow | isa:"Workflow"
+    trait: trigger: "new_ticket"
+    edge: step -> node: first_step
+
+node: first_step | isa:"Step"
+    trait: action_py: "handlers.process"

@@ -1,4 +1,5 @@
 """NFL parser stub using Lark."""
+
 from __future__ import annotations
 
 import re
