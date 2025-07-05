@@ -1,0 +1,25 @@
+// NFL v0.3
+pack: Generic_Example_v1
+  | title: "Generic Data Example"
+  | version: "2025-07-04"
+
+node: entity_1
+  | isa: "Thing"
+  | name: "Entity One"
+  | description: "A primary entity"
+  | trait.metadata
+    | category: "Primary"
+    | priority: 1
+  | trait.geo
+    | latitude: 40.7128
+    | longitude: -74.0060
+
+node: event_1
+  | isa: "Event"
+  | name: "Annual Meeting"
+  | description: "A scheduled event"
+  | trait.temporal
+    | startDate: "2025-10-01T09:00:00Z"
+
+edge: entity_1 -> participant -> event_1
+  | since: "2025-01-01"
